@@ -7,14 +7,9 @@ base_url = "http://www.ecfa.org"
 search_url = "/MemberSearch.aspx"
 
 state_short = [
-    "AL", "AK", "AZ", "AR"
-, 
-"CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL"
-, 
-"IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV"
-, 
-"NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX"
-, 
+    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", 
+"IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", 
+"NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", 
 "UT", "VT", "VA", "WA", "WV", "WI", "WY"
 			]
 
@@ -158,11 +153,15 @@ for m in range(0, len(ministry_url_suffix)):
 
 
 
+print len(ministry)
+print len(city)
+print len(state)
 print len(phone)
 print len(fax)
 print len(website)
 print len(top_leader)
 print len(donor_contact)
+print len(type)
 print len(total_revenue)
 print len(total_expenses)
 print len(total_assets)
@@ -194,18 +193,19 @@ master_frame["Reporting Period"] = reporting_period
 master_frame["Year Founded"] = year_founded
 master_frame["Membership Start Date"] = membership_start_date
 
+print master_frame.head(5)
 
-print master_frame
+# write frame to file
+master_frame.to_csv("ecfa.csv", encoding='utf-8', index=False)
 
 
 # ---------de-bugging-------------
-for m in range(0, len(ministry_url_suffix)):
-    ministry_page_url = base_url + "/" + ministry_url_suffix[m]
-    r = requests.get(ministry_page_url)
-    print r
-    print ministry_page_url
+# for m in range(0, len(ministry_url_suffix)):
+#     if m != 844:
+#         ministry_page_url = base_url + "/" + ministry_url_suffix[m]
+#         r = requests.get(ministry_page_url)
+#         print r
+#         print ministry_page_url
 
-print len(ministry_url_suffix)
 
-print ministry_url_suffix[844]
 
