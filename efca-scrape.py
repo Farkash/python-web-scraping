@@ -7,10 +7,10 @@ base_url = "http://www.ecfa.org"
 search_url = "/MemberSearch.aspx"
 
 state_short = ["AL"
-# , "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", 
-# "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", 
-# "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", 
-# "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+, "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", 
+"IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", 
+"NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", 
+"UT", "VT", "VA", "WA", "WV", "WI", "WY"
 			]
 
 state_url_query_string = "?State="
@@ -69,7 +69,6 @@ fax = []
 website = []
 top_leader = []
 donor_contact = []
-# ministry_type = []
 total_revenue = []
 total_expenses = []
 total_assets = []
@@ -189,4 +188,12 @@ master_frame["Membership Start Date"] = membership_start_date
 
 
 print master_frame
+
+
+# ---------de-bugging-------------
+for m in range(0, len(ministry_url_suffix)):
+    ministry_page_url = base_url + "/" + ministry_url_suffix[m]
+    r = requests.get(ministry_page_url)
+    print r
+    print ministry_page_url
 
