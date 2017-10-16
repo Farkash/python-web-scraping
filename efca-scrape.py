@@ -102,8 +102,75 @@ for table in soup_cauldron:
         city.append(cell_list[2])
         state.append(cell_list[3])
 
-len(state)
+# len(state)
 
+# now, add in all the nice detailed data about each org
+# not all orgs will have all the same data, so, find all the possible fields,
+# and parse through the soup for them. Then check to see if they're null (nonetype)
+# before pushing them to the global lists, and change them to "" if they are.
+
+
+phone = []
+fax = []
+website = []
+top_leader = []
+donor_contact = []
+# ministry_type = []
+total_revenue = []
+total_expenses = []
+total_assets = []
+total_liabilities = []
+net_assets = []
+reporting_period = []
+year_founded = []
+membership_start_date = []
+
+
+for m in range(0, len(ministry_url_suffix)):
+    ministry_page_url = base_url + "/" + ministry_url_suffix[m]
+    opened_profile = urllib2.urlopen(ministry_page_url)
+    profile_html = BeautifulSoup(opened_profile, "lxml")
+    if profile_html.find("span", id="BaseContent_Content_lblContactInfoPhone") != None:
+        t_phone = profile_html.find("span", id="BaseContent_Content_lblContactInfoPhone").text.encode("utf-8")
+        phone.append(t_phone)
+    else:
+        phone.append("")
+    if profile_html.find("span", id="BaseContent_Content_lblContactInfoFax") != None:
+        t_fax = profile_html.find("span", id="BaseContent_Content_lblContactInfoFax").text.encode("utf-8")
+        fax.append(t_fax)
+    else:
+        phone.append("")
+    if profile_html.find("span", id="BaseContent_Content_lblContactInfoWebsite") != None:
+        t_website = profile_html.find("span", id="BaseContent_Content_lblContactInfoWebsite").find("a", href=True)['href'] 
+        website.append(t_website)
+    else:
+        website.append("")
+    if profile_html.find("span", id="BaseContent_Content_lblHeadingFounded") != None:
+        t_year_founded = profile_html.find("span", id="BaseContent_Content_lblHeadingFounded").text.encode("utf-8")
+        year_founded.append(t_year_founded)
+    else:
+        year_founded.append("")
+    if profile_html.find("span", id="BaseContent_Content_lblContact") != None:
+        t_top_leader = profile_html.find("span", id="BaseContent_Content_lblContact").text.encode("utf-8")
+        top_leader.append(t_top_leader)
+    else:
+        top_leader.append("")
+    if profile_html.find("span", id="BaseContent_Content_lblContact") != None:
+        t_donor_contact = profile_html.find("span", id="BaseContent_Content_lblContact").text.encode("utf-8")
+        donor_contact.append(t_donor_contact)
+    else:
+        donor_contact.append("")
+    if profile_html.find("span", id="BaseContent_Content_lblTotalRevenue") != None:
+        t_total_revenue = profile_html.find("span", id="BaseContent_Content_lblTotalRevenue").text.encode("utf-8")
+        total_revenue.append(t_total_revenue)
+    else:
+        total_revenue.append("")
+    
+
+print ministry_page_url
+
+
+print year_founded.text.encode('utf-8')
 
 
 
