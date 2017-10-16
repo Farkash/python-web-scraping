@@ -139,17 +139,12 @@ for m in range(0, len(ministry_url_suffix)):
         t_fax = profile_html.find("span", id="BaseContent_Content_lblContactInfoFax").text.encode("utf-8")
         fax.append(t_fax)
     else:
-        phone.append("")
+        fax.append("")
     if profile_html.find("span", id="BaseContent_Content_lblContactInfoWebsite") != None:
         t_website = profile_html.find("span", id="BaseContent_Content_lblContactInfoWebsite").find("a", href=True)['href'] 
         website.append(t_website)
     else:
         website.append("")
-    if profile_html.find("span", id="BaseContent_Content_lblHeadingFounded") != None:
-        t_year_founded = profile_html.find("span", id="BaseContent_Content_lblHeadingFounded").text.encode("utf-8")
-        year_founded.append(t_year_founded)
-    else:
-        year_founded.append("")
     if profile_html.find("span", id="BaseContent_Content_lblContact") != None:
         t_top_leader = profile_html.find("span", id="BaseContent_Content_lblContact").text.encode("utf-8")
         top_leader.append(t_top_leader)
@@ -165,12 +160,45 @@ for m in range(0, len(ministry_url_suffix)):
         total_revenue.append(t_total_revenue)
     else:
         total_revenue.append("")
-    
+    if profile_html.find("span", id="BaseContent_Content_lblTotalExpenses") != None:
+        t_total_expenses = profile_html.find("span", id="BaseContent_Content_lblTotalExpenses").text.encode("utf-8")
+        total_expenses.append(t_total_expenses)
+    else:
+        total_expenses.append("")
+    if profile_html.find("span", id="BaseContent_Content_lblTotalAssets") != None:
+        t_total_assets = profile_html.find("span", id="BaseContent_Content_lblTotalAssets").text.encode("utf-8")
+        total_assets.append(t_total_assets)
+    else:
+        total_assets.append("")
+    if profile_html.find("span", id="BaseContent_Content_lblTotalLiabilities") != None:
+        t_total_liabilities = profile_html.find("span", id="BaseContent_Content_lblTotalLiabilities").text.encode("utf-8")
+        total_liabilities.append(t_total_liabilities)
+    else:
+        total_liabilities.append("")
+    if profile_html.find("span", id="BaseContent_Content_lblNetAssets") != None:
+        t_net_assets = profile_html.find("span", id="BaseContent_Content_lblNetAssets").text.encode("utf-8")
+        net_assets.append(t_net_assets)
+    else:
+        net_assets.append("")
+    if profile_html.find("span", id="BaseContent_Content_lblDataForYearEnded") != None:
+        t_reporting_period = profile_html.find("span", id="BaseContent_Content_lblDataForYearEnded").text.encode("utf-8")
+        reporting_period.append(t_reporting_period)
+    else:
+        reporting_period.append("")
+    if profile_html.find("span", id="BaseContent_Content_lblHeadingFounded") != None:
+        t_year_founded = profile_html.find("span", id="BaseContent_Content_lblHeadingFounded").text.encode("utf-8")
+        year_founded.append(t_year_founded)
+    else:
+        year_founded.append("")
+    if profile_html.find("span", id="BaseContent_Content_lblMemberSince") != None:
+        t_membership_start_date = profile_html.find("span", id="BaseContent_Content_lblMemberSince").text.encode("utf-8")
+        membership_start_date.append(t_membership_start_date)
+    else:
+        membership_start_date.append("")
 
-print ministry_page_url
 
 
-print year_founded.text.encode('utf-8')
+
 
 
 
