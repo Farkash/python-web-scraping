@@ -4,7 +4,8 @@ import pandas
 import requests
 
 
-base_url = "http://www.ecfa.org/MemberSearch.aspx"
+base_url = "http://www.ecfa.org"
+search_url = "/MemberSearch.aspx"
 
 state_list = ["alabama", "alaska", "arizona", "arkansas", "california", "colorado",
               "connecticut", "delaware", "district-of-columbia", "florida", "georgia", "hawaii",
@@ -37,7 +38,7 @@ state_url_query_string = "?State="
 soup_cauldron = []
 
 for st in state_short:
-    url = base_url + state_url_query_string + st
+    url = base_url + search_url + state_url_query_string + st
     opened_state = urllib2.urlopen(url)
     soup = BeautifulSoup(opened_state, "lxml")
     target_table = soup.find("table", id="BaseContent_Content_GridViewData")
