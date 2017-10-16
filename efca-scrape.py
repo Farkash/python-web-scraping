@@ -6,10 +6,15 @@ import requests
 base_url = "http://www.ecfa.org"
 search_url = "/MemberSearch.aspx"
 
-state_short = ["AL"
-, "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", 
-"IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", 
-"NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", 
+state_short = [
+    "AL", "AK", "AZ", "AR"
+, 
+"CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL"
+, 
+"IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV"
+, 
+"NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX"
+, 
 "UT", "VT", "VA", "WA", "WV", "WI", "WY"
 			]
 
@@ -79,74 +84,77 @@ year_founded = []
 membership_start_date = []
 
 for m in range(0, len(ministry_url_suffix)):
-    ministry_page_url = base_url + "/" + ministry_url_suffix[m]
-    opened_profile = urllib2.urlopen(ministry_page_url)
-    profile_html = BeautifulSoup(opened_profile, "lxml")
-    if profile_html.find("span", id="BaseContent_Content_lblContactInfoPhone") != None:
-        t_phone = profile_html.find("span", id="BaseContent_Content_lblContactInfoPhone").text.encode("utf-8")
-        phone.append(t_phone)
-    else:
-        phone.append("")
-    if profile_html.find("span", id="BaseContent_Content_lblContactInfoFax") != None:
-        t_fax = profile_html.find("span", id="BaseContent_Content_lblContactInfoFax").text.encode("utf-8")
-        fax.append(t_fax)
-    else:
-        fax.append("")
-    if profile_html.find("span", id="BaseContent_Content_lblContactInfoWebsite") != None:
-        t_website = profile_html.find("span", id="BaseContent_Content_lblContactInfoWebsite").find("a", href=True)['href'] 
-        website.append(t_website)
-    else:
-        website.append("")
-    if profile_html.find("span", id="BaseContent_Content_lblContact") != None:
-        t_top_leader = profile_html.find("span", id="BaseContent_Content_lblContact").text.encode("utf-8")
-        top_leader.append(t_top_leader)
-    else:
-        top_leader.append("")
-    if profile_html.find("span", id="BaseContent_Content_lblContact") != None:
-        t_donor_contact = profile_html.find("span", id="BaseContent_Content_lblContact").text.encode("utf-8")
-        donor_contact.append(t_donor_contact)
-    else:
-        donor_contact.append("")
-    if profile_html.find("span", id="BaseContent_Content_lblTotalRevenue") != None:
-        t_total_revenue = profile_html.find("span", id="BaseContent_Content_lblTotalRevenue").text.encode("utf-8")
-        total_revenue.append(t_total_revenue)
-    else:
-        total_revenue.append("")
-    if profile_html.find("span", id="BaseContent_Content_lblTotalExpenses") != None:
-        t_total_expenses = profile_html.find("span", id="BaseContent_Content_lblTotalExpenses").text.encode("utf-8")
-        total_expenses.append(t_total_expenses)
-    else:
-        total_expenses.append("")
-    if profile_html.find("span", id="BaseContent_Content_lblTotalAssets") != None:
-        t_total_assets = profile_html.find("span", id="BaseContent_Content_lblTotalAssets").text.encode("utf-8")
-        total_assets.append(t_total_assets)
-    else:
-        total_assets.append("")
-    if profile_html.find("span", id="BaseContent_Content_lblTotalLiabilities") != None:
-        t_total_liabilities = profile_html.find("span", id="BaseContent_Content_lblTotalLiabilities").text.encode("utf-8")
-        total_liabilities.append(t_total_liabilities)
-    else:
-        total_liabilities.append("")
-    if profile_html.find("span", id="BaseContent_Content_lblNetAssets") != None:
-        t_net_assets = profile_html.find("span", id="BaseContent_Content_lblNetAssets").text.encode("utf-8")
-        net_assets.append(t_net_assets)
-    else:
-        net_assets.append("")
-    if profile_html.find("span", id="BaseContent_Content_lblDataForYearEnded") != None:
-        t_reporting_period = profile_html.find("span", id="BaseContent_Content_lblDataForYearEnded").text.encode("utf-8")
-        reporting_period.append(t_reporting_period)
-    else:
-        reporting_period.append("")
-    if profile_html.find("span", id="BaseContent_Content_lblHeadingFounded") != None:
-        t_year_founded = profile_html.find("span", id="BaseContent_Content_lblHeadingFounded").text.encode("utf-8")
-        year_founded.append(t_year_founded)
-    else:
-        year_founded.append("")
-    if profile_html.find("span", id="BaseContent_Content_lblMemberSince") != None:
-        t_membership_start_date = profile_html.find("span", id="BaseContent_Content_lblMemberSince").text.encode("utf-8")
-        membership_start_date.append(t_membership_start_date)
-    else:
-        membership_start_date.append("")
+    if m != 844:
+        ministry_page_url = base_url + "/" + ministry_url_suffix[m]
+        opened_profile = urllib2.urlopen(ministry_page_url)
+        profile_html = BeautifulSoup(opened_profile, "lxml")
+        print ministry_page_url
+        print m
+        if profile_html.find("span", id="BaseContent_Content_lblContactInfoPhone") != None:
+            t_phone = profile_html.find("span", id="BaseContent_Content_lblContactInfoPhone").text.encode("utf-8")
+            phone.append(t_phone)
+        else:
+            phone.append("")
+        if profile_html.find("span", id="BaseContent_Content_lblContactInfoFax") != None:
+            t_fax = profile_html.find("span", id="BaseContent_Content_lblContactInfoFax").text.encode("utf-8")
+            fax.append(t_fax)
+        else:
+            fax.append("")
+        if profile_html.find("span", id="BaseContent_Content_lblContactInfoWebsite") != None:
+            t_website = profile_html.find("span", id="BaseContent_Content_lblContactInfoWebsite").find("a", href=True)['href'] 
+            website.append(t_website)
+        else:
+            website.append("")
+        if profile_html.find("span", id="BaseContent_Content_lblContact") != None:
+            t_top_leader = profile_html.find("span", id="BaseContent_Content_lblContact").text.encode("utf-8")
+            top_leader.append(t_top_leader)
+        else:
+            top_leader.append("")
+        if profile_html.find("span", id="BaseContent_Content_lblContact") != None:
+            t_donor_contact = profile_html.find("span", id="BaseContent_Content_lblContact").text.encode("utf-8")
+            donor_contact.append(t_donor_contact)
+        else:
+            donor_contact.append("")
+        if profile_html.find("span", id="BaseContent_Content_lblTotalRevenue") != None:
+            t_total_revenue = profile_html.find("span", id="BaseContent_Content_lblTotalRevenue").text.encode("utf-8")
+            total_revenue.append(t_total_revenue)
+        else:
+            total_revenue.append("")
+        if profile_html.find("span", id="BaseContent_Content_lblTotalExpenses") != None:
+            t_total_expenses = profile_html.find("span", id="BaseContent_Content_lblTotalExpenses").text.encode("utf-8")
+            total_expenses.append(t_total_expenses)
+        else:
+            total_expenses.append("")
+        if profile_html.find("span", id="BaseContent_Content_lblTotalAssets") != None:
+            t_total_assets = profile_html.find("span", id="BaseContent_Content_lblTotalAssets").text.encode("utf-8")
+            total_assets.append(t_total_assets)
+        else:
+            total_assets.append("")
+        if profile_html.find("span", id="BaseContent_Content_lblTotalLiabilities") != None:
+            t_total_liabilities = profile_html.find("span", id="BaseContent_Content_lblTotalLiabilities").text.encode("utf-8")
+            total_liabilities.append(t_total_liabilities)
+        else:
+            total_liabilities.append("")
+        if profile_html.find("span", id="BaseContent_Content_lblNetAssets") != None:
+            t_net_assets = profile_html.find("span", id="BaseContent_Content_lblNetAssets").text.encode("utf-8")
+            net_assets.append(t_net_assets)
+        else:
+            net_assets.append("")
+        if profile_html.find("span", id="BaseContent_Content_lblDataForYearEnded") != None:
+            t_reporting_period = profile_html.find("span", id="BaseContent_Content_lblDataForYearEnded").text.encode("utf-8")
+            reporting_period.append(t_reporting_period)
+        else:
+            reporting_period.append("")
+        if profile_html.find("span", id="BaseContent_Content_lblHeadingFounded") != None:
+            t_year_founded = profile_html.find("span", id="BaseContent_Content_lblHeadingFounded").text.encode("utf-8")
+            year_founded.append(t_year_founded)
+        else:
+            year_founded.append("")
+        if profile_html.find("span", id="BaseContent_Content_lblMemberSince") != None:
+            t_membership_start_date = profile_html.find("span", id="BaseContent_Content_lblMemberSince").text.encode("utf-8")
+            membership_start_date.append(t_membership_start_date)
+        else:
+            membership_start_date.append("")
 
 
 
@@ -196,4 +204,8 @@ for m in range(0, len(ministry_url_suffix)):
     r = requests.get(ministry_page_url)
     print r
     print ministry_page_url
+
+print len(ministry_url_suffix)
+
+print ministry_url_suffix[844]
 
