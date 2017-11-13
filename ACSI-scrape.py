@@ -48,14 +48,16 @@ primary_contact_email_address = []
 phone_number = []
 fax_number = []
 website_url = []
-amount_of_early_education_students = []
-amount_of_elementary_students = []
-amount_of_middle_school_students = []
-amount_of_high_school_students = []
+early_education_students = []
+elementary_students = []
+middle_school_students = []
+high_school_students = []
 total_students = []
 i20_compliant = []
 grade_levels_taught = []
 year_founded = []
+acsi_accreditation_status = []
+grades_accredited = []
 other_accreditations = []			
 			
 # custom functions
@@ -72,33 +74,83 @@ def get_school_page_url(soup_object):
 def get_details(soup_object):
     # narrow it down to the first div of data (1 of 2):
     div1 = soup_object.find('div', class_='col1-interior')
+    first_heading = div1.find('h2')
+    if first_heading.text == 'Address':
+        address_p = first_heading.find_next_sibling('p')
+        #get all data from this <p>. Should be ok to just use content list indexes.
+        p_list = address_p.contents
+        str_addr = p_list[0].strip().encode('utf-8')
+        print str_addr
+        street_address.append(str_addr)
+        v_city = p_list[2][:p_list[2].rfind(",")].strip().encode('utf-8')
+        print v_city
+        city.append(v_city)
+        zip = p_list[2][-10:].strip().encode('utf-8')
+        print zip
+        zip_code.append(zip)
+        phone = p_list[6][p_list[6].find(':') +2:].strip().encode('utf-8')
+        print phone
+        phone_number.append(phone)
+        fax = p_list[8][p_list[8].find(':') +2:].strip().encode('utf-8')
+        print fax
+        fax_number.append(fax)
+        h_email = p_list[11].text.encode('utf-8')
+        print h_email
+        headmaster_email_address.append(h_email)
+        school_homepage = p_list[14].text.encode('utf-8')
+        print school_homepage
+        website_url.append(school_homepage)
+        
+        #move on to next section of the first div 
+        second_heading = address_p.find_next_sibling('h2')
+        if second_heading.text = 'ACSI Accredited':
+            accredit_p = second_heading.find_next_sibling('p')
+            #grab all the accreditation data
+            p_list_accredit = accredit_p.contents
+            accredit = p_list_accredit[0][p_list_accredit[0].find(':') + 2 :].strip().encode('utf-8')
+            print accredit 
+            acsi_accreditation_status.append(accredit)
+            grades_accredit = p_list_accredit[2][p_list_accredit[2].find(':') + 2 :].strip().encode('utf-8')
+            print grades_accredit
+            grades_accredited.append(grades_accredit)
+        elif second_heading.text = 'Statistics':
+            # make the accreditation fields blank
+            accredit = ''
+            print accredit
+            acsi_accreditation_status.append(accredit)
+            grades_accredit = ''
+            print grades_accredit
+            grades_accredited.append(grades_accredit)
+            # Grab stats data
+            
+            
+            
+            # then you're done, so break out of this loop and check for the next div for primary contact data
+            break
+        else:
+            print 'The second heading was not Accreditation or Stats'
+        third heading = accredit_p.find_next_sibling('h2')
+        if third_heading.text = 'Statistics':
+            # Grab stats data
+            
+            
+        else:
+            print "Expected third heading to be Statistics, it wasn't."
+    else:
+        print 'No h2 heading tag found for Address data.'
     
-    # insert new method where I check for h2, then grab next p if it's there
+    # jump down to the next div
+    div2 = soup_object.find('div', class_='col2-interior')
+    main_contact_p = div2.find('p')
+    contact_person = main_contact_p.text.encode('utf-8')
+    primary_contact_name.append(contact_person)
     
-    div1_paras = div1.findAll('p')
-    # p_list = div1.p.contents
-    p_list = div1_paras[0].contents
-    str_addr = p_list[0].strip().encode('utf-8')
-    print str_addr
-    street_address.append(str_addr)
-    v_city = p_list[2][:p_list[2].rfind(",")].strip().encode('utf-8')
-    print v_city
-    city.append(v_city)
-    zip = p_list[2][-10:].strip().encode('utf-8')
-    print zip
-    zip_code.append(zip)
-    phone = p_list[6][p_list[6].find(':') +2:].strip().encode('utf-8')
-    print phone
-    phone_number.append(phone)
-    fax = p_list[8][p_list[8].find(':') +2:].strip().encode('utf-8')
-    print fax
-    fax_number.append(fax)
-    h_email = p_list[11].text.encode('utf-8')
-    print h_email
-    headmaster_email_address.append(h_email)
-    school_homepage = p_list[14].text.encode('utf-8')
-    print school_homepage
-    website_url.append(school_homepage)
+    
+    
+    
+    
+    
+    
     
     
     
@@ -109,13 +161,6 @@ def get_details(soup_object):
 
 
 
-    # div1 = soup_object.find('div', class_='col1-interior')
-    # para_group_1 = div1.findAll('p') 
-    # detail_list = []
-    # for i in range(0, len(para_group_1)):
-    #     line = para_group_1[1].text.encode('utf-8')
-    #     print line
-    
         
 
 
@@ -160,9 +205,12 @@ for i in range(0, len(school_page_url)):
     get_details(page_soup)
     
     
-# working out how to get the details. The below will go into the get_details function later:
     
-# testing
+    
+    
+    
+    
+#################### testing ######################
 test = s.get('https://www.acsi.org/member-search/searchdetails/SubmitDetail?SchoolKey=d8e31366-f67c-40c5-a4bd-2d7643c5bd33&saccredited=&sgradelevel=&sspecialprogram=&state=AL&accredited=')
 test_soup = BeautifulSoup(test.content, "lxml")
 div1 = test_soup.find('div', class_='col1-interior')
@@ -194,6 +242,93 @@ if first_heading.text == 'Address':
         print "Expected third heading to be Statistics, it wasn't."
 else:
     print 'No h2 heading tag found for Address data.'
+
+
+
+second_heading = address_p.find_next_sibling('h2')
+# if second_heading.text = 'ACSI Accredited':
+accredit_p = second_heading.find_next_sibling('p')
+#grab all the accreditation data
+p_list_accredit = accredit_p.contents
+accredit = p_list_accredit[0][p_list_accredit[0].find(':') + 2 :].strip().encode('utf-8')
+grades_accredit = p_list_accredit[2][p_list_accredit[2].find(':') + 2 :].strip().encode('utf-8')
+
+#stats fields to find, not all schools have them all
+# Early Education Enrollment: 0
+# Elementary Enrollment: 231
+# Middle School Enrollment: 118
+# High School Enrollment: 121
+# Total Enrollment: 470
+# I20: True
+# Grade Levels: K - 12
+# Year Founded: 1999
+# Other Accreditation: AdvancED, SACS
+# Special Needs: True
+
+# better way than checking through each one in sequence?
+# can I put the text from all into a list, and then search that list for any of the terms,
+# and if the terms exits, grab the data from the colon to the end of the line?
+# that feels smarter. 
+# it would have to be a list of text only. Already cleaned up and if in a tag, text extracted.
+
+
+
+paragraph = '<p>\n<span>Early Education Enrollment: 0</span><br/>\r\n        Elementary Enrollment: 231<br/>\r\n        Middle School Enrollment: 118<br/>\r\n        High School Enrollment: 121<br/>\r\n        Total Enrollment: 470<br/>\n<span>I20: True</span><br/>\r\n                                                Grade Levels: K - 12<br/>\r\n        Year Founded: 1999<br/>\n<span>Other Accreditation: AdvancED, SACS</span>\n</p>'
+
+
+
+
+stats_p = accredit_p.find_next_sibling('p')
+p_list_stats = stats_p.contents
+
+# clear out junk from list with loop or list comprehension
+for i in range(0, len(p_list_stats)):
+    # if p_list_stats[i] != None:
+        # p_list_stats[i].replace('<br/>', '')
+    print type(p_list_stats[i])
+    print p_list_stats[i]
+    
+type(p_list_stats[0])
+
+[x for x in p_list_stats if x != '<br/>']
+
+type(None)
+
+# maybe just instead of cleaning up the lists first to avoid errors,
+# I instead parse through the lists using a try block. If it throws and error, it skips it.
+'Year Founded' in p_list_stats
+p_list_stats.find('Year')
+
+p_list_stats
+
+
+
+# a = [4,2,3,1,5,6]
+
+# try:
+#     b=a.index(7)
+# except ValueError:
+#     "Do nothing"
+# else:
+#     "Do something with variable b"
+
+
+
+
+#for the stats section, not always in same order, so must check text in each element
+field_test_1 = p_list_stats[1].text[: p_list_stats[1].text.find(':')].strip()
+if field_test_1 == 'Early Education Enrollment':
+    early_enroll = p_list_stats[1].text[p_list_stats[1].text.find(':') + 2 :].strip().encode('utf-8')
+    print early_enroll
+    early_education_students.append(early_enroll)
+    
+    
+
+
+    
+    
+
+
 
 # jump down to the next div
 div2 = test_soup.find('div', class_='col2-interior')
