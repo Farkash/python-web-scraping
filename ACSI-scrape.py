@@ -43,12 +43,12 @@ street_address = []
 city = []
 state = []
 zip_code = []
-headmaster_name = []
-headmaster_email_address = []
+primary_contact_name = []
+primary_contact_email_address = []
 phone_number = []
 fax_number = []
 website_url = []
-amount_of_early_childhood_students = []
+amount_of_early_education_students = []
 amount_of_elementary_students = []
 amount_of_middle_school_students = []
 amount_of_high_school_students = []
@@ -72,6 +72,9 @@ def get_school_page_url(soup_object):
 def get_details(soup_object):
     # narrow it down to the first div of data (1 of 2):
     div1 = soup_object.find('div', class_='col1-interior')
+    
+    # insert new method where I check for h2, then grab next p if it's there
+    
     div1_paras = div1.findAll('p')
     # p_list = div1.p.contents
     p_list = div1_paras[0].contents
@@ -84,10 +87,10 @@ def get_details(soup_object):
     zip = p_list[2][-10:].strip().encode('utf-8')
     print zip
     zip_code.append(zip)
-    phone = p_list[6].strip().encode('utf-8')
+    phone = p_list[6][p_list[6].find(':') +2:].strip().encode('utf-8')
     print phone
     phone_number.append(phone)
-    fax = p_list[8].strip().encode('utf-8')
+    fax = p_list[8][p_list[8].find(':') +2:].strip().encode('utf-8')
     print fax
     fax_number.append(fax)
     h_email = p_list[11].text.encode('utf-8')
@@ -96,6 +99,7 @@ def get_details(soup_object):
     school_homepage = p_list[14].text.encode('utf-8')
     print school_homepage
     website_url.append(school_homepage)
+    
     
     
     
@@ -162,10 +166,52 @@ for i in range(0, len(school_page_url)):
 test = s.get('https://www.acsi.org/member-search/searchdetails/SubmitDetail?SchoolKey=d8e31366-f67c-40c5-a4bd-2d7643c5bd33&saccredited=&sgradelevel=&sspecialprogram=&state=AL&accredited=')
 test_soup = BeautifulSoup(test.content, "lxml")
 div1 = test_soup.find('div', class_='col1-interior')
+
+# new way where I find h2s
+# Find the first h2 tag, and check if it's 'Address'
+# if so, go to the next p tag and get data
+div1.contents
+#find first h2 heading
+first_heading = div1.find('h2')
+if first_heading.text == 'Address':
+    address_p = first_heading.find_next_sibling('p')
+    #get all data from this <p>. Should be ok to just use content list indexes.
+    second_heading = address_p.find_next_sibling('h2')
+    if second_heading.text = 'ACSI Accredited':
+        accredit_p = second_heading.find_next_sibling('p')
+        #grab all the accreditation data
+    elif second_heading.text = 'Statistics':
+        # make the accreditation fields blank
+        # Grab stats data
+        # then you're done, so break out of this loop and check for the next div for primary contact data
+        break
+    else:
+        print 'The second heading was not Accreditation or Stats'
+    third heading = accredit_p.find_next_sibling('h2')
+    if third_heading.text = 'Statistics':
+        # Grab stats data
+    else:
+        print "Expected third heading to be Statistics, it wasn't."
+else:
+    print 'No h2 heading tag found for Address data.'
+
+# jump down to the next div
+div2 = test_soup.find('div', class_='col2-interior')
+main_contact_p = div2.find('p')
+contact_person = main_contact_p.text.encode('utf-8')
+primary_contact_name.append(contact_person)
+    
+
+
+
+
+#old
 test_div_paras = div1.findAll('p')
 test_p_list = test_div_paras[0].contents
 str_addr = p_list[0].strip().encode('utf-8')
 print str_addr
+test_p_list[6][p_list[6].find(':') +2:].strip().encode('utf-8')
+
 
 test_p_list2 = test_div_paras[1].contents
 
