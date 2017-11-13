@@ -20,10 +20,7 @@ import requests
 # needed to pass to the post method. In this case, it is SelectedState:<state 2 digit>.
 # For example, SelectedState:AL
 
-# start a session to make repeated calls to the server much faster, since
-# the underlying TCP connection will be reused. This is what's meant by "HTTP persistent connection."
-# This is much more performant than making hundreds of isolated HTTP requests all separately.
-s = requests.Session()
+
 
 # starting URL that has the primary form I want to submit searches on (one for each state)
 base_url = 'https://www.acsi.org'
@@ -75,11 +72,45 @@ def get_school_page_url(soup_object):
 def get_details(soup_object):
     # narrow it down to the first div of data (1 of 2):
     div1 = soup_object.find('div', class_='col1-interior')
-    para_group_1 = div1.findAll('p') 
-    detail_list = []
-    for i in range(0, len(para_group_1)):
-        line = para_group_1[1].text.encode('utf-8')
-        print line
+    div1_paras = div1.findAll('p')
+    # p_list = div1.p.contents
+    p_list = div1_paras[0].contents
+    str_addr = p_list[0].strip().encode('utf-8')
+    print str_addr
+    street_address.append(str_addr)
+    v_city = p_list[2][:p_list[2].rfind(",")].strip().encode('utf-8')
+    print v_city
+    city.append(v_city)
+    zip = p_list[2][-10:].strip().encode('utf-8')
+    print zip
+    zip_code.append(zip)
+    phone = p_list[6].strip().encode('utf-8')
+    print phone
+    phone_number.append(phone)
+    fax = p_list[8].strip().encode('utf-8')
+    print fax
+    fax_number.append(fax)
+    h_email = p_list[11].text.encode('utf-8')
+    print h_email
+    headmaster_email_address.append(h_email)
+    school_homepage = p_list[14].text.encode('utf-8')
+    print school_homepage
+    website_url.append(school_homepage)
+    
+    
+    
+    #skip down to the next div
+    div2 = soup_object.find('div', class_='col2-interior')
+    p_list3 = div1_paras[1].contents
+
+
+
+    # div1 = soup_object.find('div', class_='col1-interior')
+    # para_group_1 = div1.findAll('p') 
+    # detail_list = []
+    # for i in range(0, len(para_group_1)):
+    #     line = para_group_1[1].text.encode('utf-8')
+    #     print line
     
         
 
@@ -91,6 +122,11 @@ def get_details(soup_object):
 #     state_dict = {'SelectedState':state_short[i]}
 
 state_dict = {'SelectedState':'AL'}
+
+# start a session to make repeated calls to the server much faster, since
+# the underlying TCP connection will be reused. This is what's meant by "HTTP persistent connection."
+# This is much more performant than making hundreds of isolated HTTP requests all separately.
+s = requests.Session()
 
 post_response = s.post(post_url, state_dict)
 # how to parse through html returned from http POST response?
@@ -126,17 +162,25 @@ for i in range(0, len(school_page_url)):
 test = s.get('https://www.acsi.org/member-search/searchdetails/SubmitDetail?SchoolKey=d8e31366-f67c-40c5-a4bd-2d7643c5bd33&saccredited=&sgradelevel=&sspecialprogram=&state=AL&accredited=')
 test_soup = BeautifulSoup(test.content, "lxml")
 div1 = test_soup.find('div', class_='col1-interior')
-print div1
+test_div_paras = div1.findAll('p')
+test_p_list = test_div_paras[0].contents
+str_addr = p_list[0].strip().encode('utf-8')
+print str_addr
+
+test_p_list2 = test_div_paras[1].contents
+
 
 # just give me the content of the <p> tag in the first target div
 # find a good way to parse through the blob
 # the .contents list is automatically created for each part of the tree. Call on it. 
 p_list = div1.p.contents
-len(div1.p.contents)
-#clean junk out of the contents list
 p_list
-str_addr = div1.p.contents[0].encode('utf-8')
-print str_addr
+len(p_list)
+#clean junk out of the contents list
+# for p in range(0, len(p_list)):
+    str_addr = p_list[p].strip().encode('utf-8')
+    # print str_addr
+    
 print div1.p.contents[1]
 city_state_zip = div1.p.contents[2].encode('utf-8')
 print city_state_zip
@@ -147,11 +191,13 @@ for child in div1.p.children:
     print child
 
 p_list[0]
-p_list[1].strip().encode('utf-8')
+p_list[0].strip().encode('utf-8')
 
 
-[x for x in p_list if x != '<br/>']
-[x for x in p_list if x != 2]
+[x for x in p_list if x != ' <br/>']
+
+[x for x in p_list if x is not None]
+
 
 div2 = test_soup.find('div', class_='col2-interior')
 head_name = div2.find('p').text.encode('utf-8')
