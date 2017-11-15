@@ -122,6 +122,7 @@ def get_details(soup_object):
             print grades_accredit
             grades_accredited.append(grades_accredit)
             # Grab stats data
+            statistics_p = second_heading.find_next_sibling('p')
             
             
             
@@ -276,42 +277,67 @@ grades_accredit = p_list_accredit[2][p_list_accredit[2].find(':') + 2 :].strip()
 paragraph = '<p>\n<span>Early Education Enrollment: 0</span><br/>\r\n        Elementary Enrollment: 231<br/>\r\n        Middle School Enrollment: 118<br/>\r\n        High School Enrollment: 121<br/>\r\n        Total Enrollment: 470<br/>\n<span>I20: True</span><br/>\r\n                                                Grade Levels: K - 12<br/>\r\n        Year Founded: 1999<br/>\n<span>Other Accreditation: AdvancED, SACS</span>\n</p>'
 
 
+h2_1 = div1.find('h2')
+p1 = first_h2.find_next_sibling('p')
+h2_2 = p1.find_next_sibling('h2')
+p2 = h2_2.find_next_sibling('p')
+h2_3 = p2.find_next_sibling('h2')
+p3 = h2_3.find_next_sibling('p')
+# p3.contents
+p3_text_list = p3.text.split('\n')
+p3_clean = [x.strip() for x in p3_text_list if x != '']
+
+# now figure out how to look up text in the string and grab value after colon if it exists
+# Early Education Enrollment
+for i in xrange(0, len(p3_clean)):
+    if 'Early Education Enrollment' in p3_clean[i]:
+        early_ed = p3_clean[i][p3_clean[i].find(':') + 2 :].strip().encode('utf-8')
+        early_education_students.append(early_ed)
+        print early_ed
+        break
+    else:
+        early_ed = ''
+        early_education_students.append(early_ed)
+        print 'Text not found, making this value blank'
+# Elementary Enrollment
+for i in xrange(0, len(p3_clean)):
+    if 'Elementary Enrollment' in p3_clean[i]:
+        elem = p3_clean[i][p3_clean[i].find(':') + 2 :].strip().encode('utf-8')
+        elementary_students.append(elem)
+        print elem
+        break
+    else:
+        elem = ''
+        elementary_students.append(elem)
+        print 'Text not found, making this value blank'
+# Middle School Enrollment
+for i in xrange(0, len(p3_clean)):
+    if 'Middle School Enrollment' in p3_clean[i]:
+        middle = p3_clean[i][p3_clean[i].find(':') + 2 :].strip().encode('utf-8')
+        middle_school_students.append(middle)
+        print middle
+        break
+    else:
+        middle = ''
+        middle_school_students.append(middle)
+        print 'Text not found, making this value blank'
+# High School Enrollment
+for i in xrange(0, len(p3_clean)):
+    if 'High School Enrollment' in p3_clean[i]:
+        high = p3_clean[i][p3_clean[i].find(':') + 2 :].strip().encode('utf-8')
+        high_school_students.append(high)
+        print high
+        break
+    else:
+        high = ''
+        high_school_students.append(high)
+        print 'Text not found, making this value blank'
 
 
-stats_p = accredit_p.find_next_sibling('p')
-p_list_stats = stats_p.contents
-
-# clear out junk from list with loop or list comprehension
-for i in range(0, len(p_list_stats)):
-    # if p_list_stats[i] != None:
-        # p_list_stats[i].replace('<br/>', '')
-    print type(p_list_stats[i])
-    print p_list_stats[i]
-    
-type(p_list_stats[0])
-
-[x for x in p_list_stats if x != '<br/>']
-
-type(None)
-
-# maybe just instead of cleaning up the lists first to avoid errors,
-# I instead parse through the lists using a try block. If it throws and error, it skips it.
-'Year Founded' in p_list_stats
-p_list_stats.find('Year')
-
-p_list_stats
 
 
-
-# a = [4,2,3,1,5,6]
-
-# try:
-#     b=a.index(7)
-# except ValueError:
-#     "Do nothing"
-# else:
-#     "Do something with variable b"
-
+early_ed = [x[x.find(':') + 2 :] for x in p3_clean if 'Fart' in x]
+early_ed[0]
 
 
 
