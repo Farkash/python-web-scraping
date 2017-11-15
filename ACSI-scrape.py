@@ -1,3 +1,7 @@
+# left off at line 287. There may not be a third heading, so handle that
+
+
+
 # Association of Christian Schools International (ACSI)
 # https://www.acsi.org/
 # this site requires the submission of forms and capture of the search results. 
@@ -39,6 +43,7 @@ state_short = [
 			
 school_name = []
 school_page_url = []
+
 street_address = []
 city = []
 state = []
@@ -97,7 +102,7 @@ def get_details(soup_object):
         fax_number.append(fax)
         h_email = p_list[11].text.encode('utf-8')
         print h_email
-        headmaster_email_address.append(h_email)
+        primary_contact_email_address.append(h_email)
         school_homepage = p_list[14].text.encode('utf-8')
         print school_homepage
         website_url.append(school_homepage)
@@ -279,7 +284,7 @@ def get_details(soup_object):
             
         else:
             print 'The second heading was not Accreditation or Stats'
-        third_heading = accredit_p.find_next_sibling('h2')
+        third_heading = second_heading.find_next_sibling('h2')
         if third_heading.text == 'Statistics':
             # Grab stats data
             stats_raw_p = third_heading.find_next_sibling('p')
