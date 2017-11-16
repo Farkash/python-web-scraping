@@ -1,7 +1,3 @@
-# left off at line 287. There may not be a third heading, so handle that
-
-
-
 # Association of Christian Schools International (ACSI)
 # https://www.acsi.org/
 # this site requires the submission of forms and capture of the search results. 
@@ -485,13 +481,12 @@ master_frame["Special Needs"] = special_needs
 print master_frame.head(5)
 
 # write frame to file
-master_frame.to_csv("data/acsi.csv", encoding='utf-8', index=False)   
+master_frame.to_csv("/Users/Steve/Dropbox/programming/Python/web-scraping/data/acsi.csv", encoding='utf-8', index=False)   
     
 file_io_time_elapsed = timeit.default_timer() - file_io_start_time  
 
 print "Scrape time elapsed: %d" %file_io_time_elapsed
 
-    
     
     
     
