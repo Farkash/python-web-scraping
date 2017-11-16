@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 import pandas
 import requests
 import timeit
+from time import sleep
 
 # since I'll be submitting a form to get results back, I will be using
 # the POST HTTP method. Then the GET method to paginate through search result pages.
@@ -442,6 +443,7 @@ for st in range(0, len(state_short)):
         school_page_response = s.get(base_url + school_page_url[i])
         page_soup = BeautifulSoup(school_page_response.content, "lxml")
         get_details(page_soup)
+        sleep(30)
     
 scrape_time_elapsed = timeit.default_timer() - scrape_start_time    
 print "Scrape time elapsed: %d" %scrape_time_elapsed
