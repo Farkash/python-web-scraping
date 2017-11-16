@@ -31,10 +31,12 @@ base_url = 'https://www.acsi.org'
 post_url = 'https://www.acsi.org/member-search/searchresults/SubmitResult'
 # list declarations:
 state_short = [
-    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", 
-"IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", 
-"NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", 
-"UT", "VT", "VA", "WA", "WV", "WI", "WY"
+    "AL"
+    , "AK"
+#     , "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", 
+# "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", 
+# "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", 
+# "UT", "VT", "VA", "WA", "WV", "WI", "WY"
 			]
 			
 # ','.join(state_short)
@@ -76,6 +78,7 @@ def get_school_page_url(soup_object):
     school_urls = soup_object.findAll("a", id="Details_item.cst_key")
     for i in range(0,len(school_urls)):
         school_page_url.append(school_urls[i]['href'])
+        curr_st_school_page_url.append(school_urls[i]['href'])
 
 def get_details(soup_object):
     # narrow it down to the first div of data (1 of 2):
@@ -106,7 +109,6 @@ def get_details(soup_object):
         school_homepage = p_list[14].text.encode('utf-8')
         print school_homepage
         website_url.append(school_homepage)
-        
         #move on to next section of the first div 
         second_heading = address_p.find_next_sibling('h2')
         if second_heading.text == 'ACSI Accredited':
@@ -131,7 +133,6 @@ def get_details(soup_object):
             stats_raw_p = second_heading.find_next_sibling('p')
             stats_raw_list = stats_raw_p.text.split('\n')
             stats_list = [x.strip() for x in stats_raw_list if x != '']
-            
             # Early Education Enrollment
             early_ed_found = 'N'
             for i in xrange(0, len(stats_list)):
@@ -141,12 +142,10 @@ def get_details(soup_object):
                     print early_ed
                     early_ed_found = 'Y'
                     break
-                
             if early_ed_found == 'N':
                 early_ed = ''
                 early_education_students.append(early_ed)
                 print 'Text not found, making this value blank'
-                
             # Elementary Enrollment
             elem_found = 'N'
             for i in xrange(0, len(stats_list)):
@@ -156,12 +155,10 @@ def get_details(soup_object):
                     print elem
                     elem_found = 'Y'
                     break
-            
             if elem_found == 'N':
                 elem = ''
                 elementary_students.append(elem)
                 print 'Text not found, making this value blank'
-                
             # Middle School Enrollment
             middle_found = 'N'
             for i in xrange(0, len(stats_list)):
@@ -171,12 +168,10 @@ def get_details(soup_object):
                     print middle
                     middle_found = 'Y'
                     break
-            
             if middle_found == 'N':
                 middle = ''
                 middle_school_students.append(middle)
                 print 'Text not found, making this value blank'
-                
             # High School Enrollment
             high_found = 'N'
             for i in xrange(0, len(stats_list)):
@@ -186,12 +181,10 @@ def get_details(soup_object):
                     print high
                     high_found = 'Y'
                     break
-            
             if high_found == 'N':
                 high = ''
                 high_school_students.append(high)
                 print 'Text not found, making this value blank'
-                
             # Total Enrollment
             total_s_found = 'N'
             for i in xrange(0, len(stats_list)):
@@ -201,12 +194,10 @@ def get_details(soup_object):
                     print total_s
                     total_s_found = 'Y'
                     break
-            
             if total_s_found == 'N':
                 total_s = ''
                 total_students.append(total_s)
                 print 'Text not found, making this value blank'
-                
             # I20
             I20_found = 'N'
             for i in xrange(0, len(stats_list)):
@@ -216,12 +207,10 @@ def get_details(soup_object):
                     print I20
                     I20_found = 'Y'
                     break
-            
             if I20_found == 'N':
                 I20 = ''
                 i20_compliant.append(I20)
                 print 'Text not found, making this value blank'
-                
             # Grade Levels
             grade_l_found = 'N'
             for i in xrange(0, len(stats_list)):
@@ -231,12 +220,10 @@ def get_details(soup_object):
                     print grade_l
                     grade_l_found = 'Y'
                     break
-            
             if grade_l_found == 'N':
                 grade_l= ''
                 grade_levels_taught.append(grade_l)
                 print 'Text not found, making this value blank'
-                
             # Year Founded
             year_found = 'N'
             for i in xrange(0, len(stats_list)):
@@ -246,12 +233,10 @@ def get_details(soup_object):
                     print year
                     year_found = 'Y'
                     break
-            
             if year_found == 'N':
                 year = ''
                 year_founded.append(year)
                 print 'Text not found, making this value blank'
-                
             # Other Accreditation
             other_a_found = 'N'
             for i in xrange(0, len(stats_list)):
@@ -261,12 +246,10 @@ def get_details(soup_object):
                     print other_a
                     other_a_found = 'Y'
                     break
-            
             if other_a_found == 'N':
                 other_a = ''
                 other_accreditations.append(other_a)
                 print 'Text not found, making this value blank'
-                
             # Special Needs
             needs_found = 'N'
             for i in xrange(0, len(stats_list)):
@@ -276,221 +259,203 @@ def get_details(soup_object):
                     print needs
                     needs_found = 'Y'
                     break
-            
             if needs_found == 'N':
                 needs = ''
                 special_needs.append(needs)
                 print 'Text not found, making this value blank' 
-            
         else:
             print 'The second heading was not Accreditation or Stats'
         third_heading = second_heading.find_next_sibling('h2')
-        if third_heading.text == 'Statistics':
-            # Grab stats data
-            stats_raw_p = third_heading.find_next_sibling('p')
-            stats_raw_list = stats_raw_p.text.split('\n')
-            stats_list = [x.strip() for x in stats_raw_list if x != '']
-            
-            # Early Education Enrollment
-            early_ed_found = 'N'
-            for i in xrange(0, len(stats_list)):
-                if 'Early Education Enrollment' in stats_list[i]:
-                    early_ed = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+        if third_heading != None:
+            if third_heading.text == 'Statistics':
+                # Grab stats data
+                stats_raw_p = third_heading.find_next_sibling('p')
+                stats_raw_list = stats_raw_p.text.split('\n')
+                stats_list = [x.strip() for x in stats_raw_list if x != '']
+                # Early Education Enrollment
+                early_ed_found = 'N'
+                for i in xrange(0, len(stats_list)):
+                    if 'Early Education Enrollment' in stats_list[i]:
+                        early_ed = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                        early_education_students.append(early_ed)
+                        print early_ed
+                        early_ed_found = 'Y'
+                        break
+                if early_ed_found == 'N':
+                    early_ed = ''
                     early_education_students.append(early_ed)
-                    print early_ed
-                    early_ed_found = 'Y'
-                    break
-                
-            if early_ed_found == 'N':
-                early_ed = ''
-                early_education_students.append(early_ed)
-                print 'Text not found, making this value blank'
-                
-            # Elementary Enrollment
-            elem_found = 'N'
-            for i in xrange(0, len(stats_list)):
-                if 'Elementary Enrollment' in stats_list[i]:
-                    elem = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                    print 'Text not found, making this value blank'
+                # Elementary Enrollment
+                elem_found = 'N'
+                for i in xrange(0, len(stats_list)):
+                    if 'Elementary Enrollment' in stats_list[i]:
+                        elem = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                        elementary_students.append(elem)
+                        print elem
+                        elem_found = 'Y'
+                        break
+                if elem_found == 'N':
+                    elem = ''
                     elementary_students.append(elem)
-                    print elem
-                    elem_found = 'Y'
-                    break
-            
-            if elem_found == 'N':
-                elem = ''
-                elementary_students.append(elem)
-                print 'Text not found, making this value blank'
-                
-            # Middle School Enrollment
-            middle_found = 'N'
-            for i in xrange(0, len(stats_list)):
-                if 'Middle School Enrollment' in stats_list[i]:
-                    middle = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                    print 'Text not found, making this value blank'
+                # Middle School Enrollment
+                middle_found = 'N'
+                for i in xrange(0, len(stats_list)):
+                    if 'Middle School Enrollment' in stats_list[i]:
+                        middle = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                        middle_school_students.append(middle)
+                        print middle
+                        middle_found = 'Y'
+                        break
+                if middle_found == 'N':
+                    middle = ''
                     middle_school_students.append(middle)
-                    print middle
-                    middle_found = 'Y'
-                    break
-            
-            if middle_found == 'N':
-                middle = ''
-                middle_school_students.append(middle)
-                print 'Text not found, making this value blank'
-                
-            # High School Enrollment
-            high_found = 'N'
-            for i in xrange(0, len(stats_list)):
-                if 'High School Enrollment' in stats_list[i]:
-                    high = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                    print 'Text not found, making this value blank'
+                # High School Enrollment
+                high_found = 'N'
+                for i in xrange(0, len(stats_list)):
+                    if 'High School Enrollment' in stats_list[i]:
+                        high = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                        high_school_students.append(high)
+                        print high
+                        high_found = 'Y'
+                        break
+                if high_found == 'N':
+                    high = ''
                     high_school_students.append(high)
-                    print high
-                    high_found = 'Y'
-                    break
-            
-            if high_found == 'N':
-                high = ''
-                high_school_students.append(high)
-                print 'Text not found, making this value blank'
-                
-            # Total Enrollment
-            total_s_found = 'N'
-            for i in xrange(0, len(stats_list)):
-                if 'Total Enrollment' in stats_list[i]:
-                    total_s = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                    print 'Text not found, making this value blank'
+                # Total Enrollment
+                total_s_found = 'N'
+                for i in xrange(0, len(stats_list)):
+                    if 'Total Enrollment' in stats_list[i]:
+                        total_s = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                        total_students.append(total_s)
+                        print total_s
+                        total_s_found = 'Y'
+                        break
+                if total_s_found == 'N':
+                    total_s = ''
                     total_students.append(total_s)
-                    print total_s
-                    total_s_found = 'Y'
-                    break
-            
-            if total_s_found == 'N':
-                total_s = ''
-                total_students.append(total_s)
-                print 'Text not found, making this value blank'
-                
-            # I20
-            I20_found = 'N'
-            for i in xrange(0, len(stats_list)):
-                if 'I20' in stats_list[i]:
-                    I20 = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                    print 'Text not found, making this value blank'
+                # I20
+                I20_found = 'N'
+                for i in xrange(0, len(stats_list)):
+                    if 'I20' in stats_list[i]:
+                        I20 = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                        i20_compliant.append(I20)
+                        print I20
+                        I20_found = 'Y'
+                        break
+                if I20_found == 'N':
+                    I20 = ''
                     i20_compliant.append(I20)
-                    print I20
-                    I20_found = 'Y'
-                    break
-            
-            if I20_found == 'N':
-                I20 = ''
-                i20_compliant.append(I20)
-                print 'Text not found, making this value blank'
-                
-            # Grade Levels
-            grade_l_found = 'N'
-            for i in xrange(0, len(stats_list)):
-                if 'Grade Levels' in stats_list[i]:
-                    grade_l = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                    print 'Text not found, making this value blank'
+                # Grade Levels
+                grade_l_found = 'N'
+                for i in xrange(0, len(stats_list)):
+                    if 'Grade Levels' in stats_list[i]:
+                        grade_l = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                        grade_levels_taught.append(grade_l)
+                        print grade_l
+                        grade_l_found = 'Y'
+                        break
+                if grade_l_found == 'N':
+                    grade_l= ''
                     grade_levels_taught.append(grade_l)
-                    print grade_l
-                    grade_l_found = 'Y'
-                    break
-            
-            if grade_l_found == 'N':
-                grade_l= ''
-                grade_levels_taught.append(grade_l)
-                print 'Text not found, making this value blank'
-                
-            # Year Founded
-            year_found = 'N'
-            for i in xrange(0, len(stats_list)):
-                if 'Year Founded' in stats_list[i]:
-                    year = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                    print 'Text not found, making this value blank'
+                # Year Founded
+                year_found = 'N'
+                for i in xrange(0, len(stats_list)):
+                    if 'Year Founded' in stats_list[i]:
+                        year = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                        year_founded.append(year)
+                        print year
+                        year_found = 'Y'
+                        break
+                if year_found == 'N':
+                    year = ''
                     year_founded.append(year)
-                    print year
-                    year_found = 'Y'
-                    break
-            
-            if year_found == 'N':
-                year = ''
-                year_founded.append(year)
-                print 'Text not found, making this value blank'
-                
-            # Other Accreditation
-            other_a_found = 'N'
-            for i in xrange(0, len(stats_list)):
-                if 'Other Accreditation' in stats_list[i]:
-                    other_a = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                    print 'Text not found, making this value blank'
+                # Other Accreditation
+                other_a_found = 'N'
+                for i in xrange(0, len(stats_list)):
+                    if 'Other Accreditation' in stats_list[i]:
+                        other_a = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                        other_accreditations.append(other_a)
+                        print other_a
+                        other_a_found = 'Y'
+                        break
+                if other_a_found == 'N':
+                    other_a = ''
                     other_accreditations.append(other_a)
-                    print other_a
-                    other_a_found = 'Y'
-                    break
-            
-            if other_a_found == 'N':
-                other_a = ''
-                other_accreditations.append(other_a)
-                print 'Text not found, making this value blank'
-                
-            # Special Needs
-            needs_found = 'N'
-            for i in xrange(0, len(stats_list)):
-                if 'Special Needs' in stats_list[i]:
-                    needs = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                    print 'Text not found, making this value blank'
+                # Special Needs
+                needs_found = 'N'
+                for i in xrange(0, len(stats_list)):
+                    if 'Special Needs' in stats_list[i]:
+                        needs = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                        special_needs.append(needs)
+                        print needs
+                        needs_found = 'Y'
+                        break
+                if needs_found == 'N':
+                    needs = ''
                     special_needs.append(needs)
-                    print needs
-                    needs_found = 'Y'
-                    break
-            
-            if needs_found == 'N':
-                needs = ''
-                special_needs.append(needs)
-                print 'Text not found, making this value blank' 
-            
-        else:
-            print "Expected third heading to be Statistics, it wasn't."
+                    print 'Text not found, making this value blank' 
+            else:
+                print "Expected third heading to be Statistics, it wasn't."
     else:
         print 'No h2 heading tag found for Address data.'
-    
+    state.append(state_short[st])
     # jump down to the next div
     div2 = soup_object.find('div', class_='col2-interior')
     main_contact_p = div2.find('p')
-    contact_person = main_contact_p.text.encode('utf-8')
-    primary_contact_name.append(contact_person)
-    
-
-# post field selections (values in the form) must be passed to post request as a dictionary
-# make a dictionary (key-value pair associative array) of state to search. 
-# for i in range(0,len(state_short)):
-#     state_dict = {'SelectedState':state_short[i]}
-
-state_dict = {'SelectedState':'AL'}
+    if main_contact_p != None:
+        contact_person = main_contact_p.text.encode('utf-8')
+        primary_contact_name.append(contact_person)
+    else:
+        contact_person = ''
+        primary_contact_name.append(contact_person)
+        print 'Text not found, making this value blank'
 
 # start a session to make repeated calls to the server much faster, since
 # the underlying TCP connection will be reused. This is what's meant by "HTTP persistent connection."
 # This is much more performant than making hundreds of isolated HTTP requests all separately.
-s = requests.Session()
+s = requests.Session()    
 
-post_response = s.post(post_url, state_dict)
-# how to parse through html returned from http POST response?
-
-soup = BeautifulSoup(post_response.content, "lxml")
-get_school_name(soup)
-get_school_page_url(soup)
-
-# paginate through until the results are all found and recorded
-while True: # hack for a do-while loop that Python doesn't explicitly have
-    next_page_anchor = soup.find("a", class_="pagerNext pager-next-button")
-    if(next_page_anchor == None):
-        break
-    else:
-        next_url = next_page_anchor['href']
-        get_response = s.get(next_url)
-        soup = BeautifulSoup(get_response.content, "lxml")
-        # with open(next_url) as next_html:
-        #     soup = BeautifulSoup(next_url)
-        get_school_name(soup)
-        get_school_page_url(soup)
-
-# here's the part where I go to the detail page for each school and grab detailed data
-for i in range(0, len(school_page_url)):
-    school_page_response = s.get(base_url + school_page_url[i])
-    page_soup = BeautifulSoup(school_page_response.content, "lxml")
-    get_details(page_soup)
+# post field selections (values in the form) must be passed to post request as a dictionary
+# make a dictionary (key-value pair associative array) of state to search. 
+for st in range(0, len(state_short)):
+    curr_st_school_page_url = []
+    state_dict = {'SelectedState':state_short[st]}
+    post_response = s.post(post_url, state_dict)
+    soup = BeautifulSoup(post_response.content, "lxml")
+    get_school_name(soup)
+    get_school_page_url(soup)
+    # get_curr_st_school_page_url(soup)
+    # paginate through until the results are all found and recorded
+    while True: # hack for a do-while loop that Python doesn't explicitly have
+        next_page_anchor = soup.find("a", class_="pagerNext pager-next-button")
+        if(next_page_anchor == None):
+            break
+        else:
+            next_url = next_page_anchor['href']
+            get_response = s.get(next_url)
+            soup = BeautifulSoup(get_response.content, "lxml")
+            # with open(next_url) as next_html:
+            #     soup = BeautifulSoup(next_url)
+            get_school_name(soup)
+            get_school_page_url(soup)
+    # Go to the detail page for each school and grab detailed data
+    for i in range(0, len(curr_st_school_page_url)):
+        school_page_response = s.get(base_url + school_page_url[i])
+        page_soup = BeautifulSoup(school_page_response.content, "lxml")
+        get_details(page_soup)
+    
+    
+    
+    
+    
     
     
     
@@ -499,9 +464,11 @@ for i in range(0, len(school_page_url)):
     
     
 #################### testing ######################
-test = s.get('https://www.acsi.org/member-search/searchdetails/SubmitDetail?SchoolKey=d8e31366-f67c-40c5-a4bd-2d7643c5bd33&saccredited=&sgradelevel=&sspecialprogram=&state=AL&accredited=')
+test = s.get('https://www.acsi.org/member-search/searchdetails/SubmitDetail?SchoolKey=4567c0ca-7c96-4f4d-9478-624956812a17&saccredited=&sgradelevel=&sspecialprogram=&state=AL&accredited=')
 test_soup = BeautifulSoup(test.content, "lxml")
 div1 = test_soup.find('div', class_='col1-interior')
+
+div1.h2
 
 # new way where I find h2s
 # Find the first h2 tag, and check if it's 'Address'
@@ -565,7 +532,7 @@ paragraph = '<p>\n<span>Early Education Enrollment: 0</span><br/>\r\n        Ele
 
 
 h2_1 = div1.find('h2')
-p1 = first_h2.find_next_sibling('p')
+p1 = h2_1.find_next_sibling('p')
 h2_2 = p1.find_next_sibling('h2')
 p2 = h2_2.find_next_sibling('p')
 h2_3 = p2.find_next_sibling('h2')
@@ -573,6 +540,9 @@ p3 = h2_3.find_next_sibling('p')
 # p3.contents
 p3_text_list = p3.text.split('\n')
 p3_clean = [x.strip() for x in p3_text_list if x != '']
+
+h2_3 == None
+
 
 # now figure out how to look up text in the string and grab value after colon if it exists
 # Early Education Enrollment
