@@ -36,7 +36,6 @@ state_short = [
 			
 school_name = []
 school_page_url = []
-
 street_address = []
 city = []
 state = []
@@ -68,7 +67,7 @@ def get_school_name(soup_object):
 def get_school_page_url(soup_object):
     school_urls = soup_object.findAll("a", id="Details_item.cst_key")
     for i in range(0,len(school_urls)):
-        school_page_url.append(school_urls[i]['href'])
+        school_page_url.append(base_url + school_urls[i]['href'])
         curr_st_school_page_url.append(school_urls[i]['href'])
 
 def get_details(soup_object):
@@ -82,10 +81,10 @@ def get_details(soup_object):
         str_addr = p_list[0].strip().encode('utf-8')
         print str_addr
         street_address.append(str_addr)
-        v_city = p_list[2][:p_list[2].rfind(",")].strip().encode('utf-8')
+        v_city = p_list[2][:p_list[2].find(",")].strip().encode('utf-8')
         print v_city
         city.append(v_city)
-        zip = p_list[2][-10:].strip().encode('utf-8')
+        zip = p_list[2][p_list[2].find(",") + 5 :].strip().encode('utf-8')
         print zip
         zip_code.append(zip)
         phone = p_list[6][p_list[6].find(':') +2:].strip().encode('utf-8')
@@ -454,7 +453,6 @@ file_io_start_time = timeit.default_timer()
 master_frame = pandas.DataFrame()
 
 master_frame["School Name"] = school_name
-master_frame["ACSI Page"] = school_page_url
 master_frame["Street Address"] = street_address
 master_frame["City"] = city
 master_frame["State"] = state
@@ -463,6 +461,7 @@ master_frame["Primary Contact Name"] = primary_contact_name
 master_frame["Primary Contact Email"] = primary_contact_email_address
 master_frame["Phone Number"] = phone_number
 master_frame["Fax Number"] = fax_number
+master_frame["ACSI Page"] = school_page_url
 master_frame["School Website"] = website_url
 master_frame["Early Education Students"] = early_education_students
 master_frame["Elementary Students"] = elementary_students
@@ -495,3 +494,8 @@ print "Scrape time elapsed: %d" %file_io_time_elapsed
 # navigating to the post url!
 # https://www.acsi.org/member-search/searchresults/SubmitResult
 # and then just paginate through the search results until the nextpage val is null?
+
+
+
+
+
