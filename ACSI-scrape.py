@@ -12,6 +12,7 @@ import urllib2
 from bs4 import BeautifulSoup
 import pandas
 import requests
+import timeit
 
 # since I'll be submitting a form to get results back, I will be using
 # the POST HTTP method. Then the GET method to paginate through search result pages.
@@ -31,17 +32,11 @@ base_url = 'https://www.acsi.org'
 post_url = 'https://www.acsi.org/member-search/searchresults/SubmitResult'
 # list declarations:
 state_short = [
-    "AL"
-    , "AK"
-#     , "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", 
-# "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", 
-# "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", 
-# "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL", "GA", "HI", "ID", "IL", 
+"IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", 
+"NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", 
+"UT", "VT", "VA", "WA", "WV", "WI", "WY"
 			]
-			
-# ','.join(state_short)
-
-			
 			
 school_name = []
 school_page_url = []
@@ -423,6 +418,7 @@ def get_details(soup_object):
 # This is much more performant than making hundreds of isolated HTTP requests all separately.
 s = requests.Session()    
 
+scrape_start_time = timeit.default_timer()
 # post field selections (values in the form) must be passed to post request as a dictionary
 # make a dictionary (key-value pair associative array) of state to search. 
 for st in range(0, len(state_short)):
@@ -452,13 +448,49 @@ for st in range(0, len(state_short)):
         page_soup = BeautifulSoup(school_page_response.content, "lxml")
         get_details(page_soup)
     
+scrape_time_elapsed = timeit.default_timer() - scrape_start_time    
+print "Scrape time elapsed: %d" %scrape_time_elapsed
+
+
+
+file_io_start_time = timeit.default_timer()
+
+master_frame = pandas.DataFrame()
+
+master_frame["School Name"] = school_name
+master_frame["ACSI Page"] = school_page_url
+master_frame["Street Address"] = street_address
+master_frame["City"] = city
+master_frame["State"] = state
+master_frame["Zip Code"] = zip_code
+master_frame["Primary Contact Name"] = primary_contact_name
+master_frame["Primary Contact Email"] = primary_contact_email_address
+master_frame["Phone Number"] = phone_number
+master_frame["Fax Number"] = fax_number
+master_frame["School Website"] = website_url
+master_frame["Early Education Students"] = early_education_students
+master_frame["Elementary Students"] = elementary_students
+master_frame["Middle School Students"] = middle_school_students
+master_frame["High School Students"] = high_school_students
+master_frame["Total Students"] = total_students
+master_frame["I20 Compliant"] = i20_compliant
+master_frame["Grade Levels Taught"] = grade_levels_taught
+master_frame["Year Founded"] = year_founded
+master_frame["ACSI Accreditation Status"]= acsi_accreditation_status
+master_frame["Grades Accredited"] = grades_accredited
+master_frame["Other Accreditations"] = other_accreditations
+master_frame["Special Needs"] = special_needs
+
+
+print master_frame.head(5)
+
+# write frame to file
+master_frame.to_csv("acsi.csv", encoding='utf-8', index=False)   
     
-    
-    
-    
-    
-    
-    
+file_io_time_elapsed = timeit.default_timer() - file_io_start_time  
+
+print "Scrape time elapsed: %d" %file_io_time_elapsed
+
     
     
     
