@@ -19,22 +19,132 @@ import urllib2
 from bs4 import BeautifulSoup
 import pandas
 import requests
+import timeit
+from time import sleep
+import random
 
-base_url = "http://www.agrm.org//agrm/Locate_a_Mission.asp"
+base_url = 'http://www.agrm.org//agrm/Locate_a_Mission.asp'
+# post_url = 'http://www.agrm.org/assnfe/CompanyDirectory.asp'
+# country_dict = {'clCD_CountryID':181}
+# first_page = s.post(post_url, country_dict)
 
-# cannot navigate to each state's page in this site, because the URL structure 
-# does not use explicit URLs. So, I have to use request to submit a search
-# to return the results for each state. 
-# So, use request to grab the returned content, then save it to a variable and parse it as usual
+s = requests.Session()  
 
-# example https://stackoverflow.com/questions/17509607/submitting-to-a-web-form-using-python
+first_page = BeautifulSoup(open("/Users/Steve/Dropbox/programming/Python/web-scraping/AGRM/agrm-first-200.html"))
+second_page = BeautifulSoup(open("/Users/Steve/Dropbox/programming/Python/web-scraping/AGRM/agrm-rest.html"))
+page_list = [first_page, second_page]
 
-data= {
-    'q': '[python]'
-    }
-# r = requests.get('http://stackoverflow.com', params=data)
-r = requests.post('https://stackoverflow.com/search', data=data)
+scrape_start_time = timeit.default_timer()
 
-print r.text
+org = []
+street_address = []
+city = []
+state = []
+zip_code = []
+phone = []
+website = []
+email_address = []
+services = []
+agrm_page_url = []
+
+# pull first chunks of data, including urls for each ogranization's page where more data can be found
+for i in range(0, len(page_list)):
+    table = page_list[i].find("table")
+    rows = table.findAll('tr')
+    for j in range(2, len(rows)):
+        name = rows[j].find('td', class_="MDSNameTD").text
+        org.append(name)
+        print name
+        page_url = 'http://www.agrm.org/assnfe/' + rows[j].find('td', class_="MDSNameTD").a['href']
+        agrm_page_url.append(page_url)
+        print page_url
+        v_city = rows[j].find('td', class_="MDSCityTD").text
+        city.append(v_city)
+        print v_city
+        v_state = rows[j].find('td', class_="MDSStateTypeTD").text
+        state.append(v_state)
+        print v_state
+        v_phone = rows[j].find('td', class_="MDSPhoneTD").text
+        phone.append(v_phone)
+        print v_phone
+        
+# now pull data from each organization's page
+for k in range(0, len(agrm_page_url)):
+    org_response = s.get(agrm_page_url[k])
+    org_soup = BeautifulSoup(org_response)
+    div_address = org_soup.find('div', class_='CoAddress').p
+    ugly_addr_list = div_address.text.strip().split('\n')
+    pretty_addr_list = [x.strip() for x in ugly_addr_list if x.strip() != '']
+    v_street = pretty_addr_list[0]
+    street_address.append(v_street)
+    print v_street
+    v_city = pretty_addr_list[1].split(',')[0]
+    city.append(v_city)
+    print v_city
+    v_state = pretty_addr_list[1].split(' ')[1]
+    state.append(v_state)
+    print v_state
+    v_zip = pretty_addr_list[1].split(' ')[2]    
+    zip_code.append(z_vip)
+    print v_zip
+    # website
+    div_contact = org_soup.find('div', class_='contact').p
+    ugly_contact_list = div_contact.text.strip().split('\n')
+    pretty_contact_list = [x.strip() for x in ugly_contact_list if x.strip() != '']
+        
+    # email_address
+    
+    # services
+    
+    
+    sleep(random.randint(15, 60))
+    
+
+
+
+
+
+test_org_page = BeautifulSoup(open("/Users/Steve/Dropbox/programming/Python/web-scraping/AGRM/test_org_page.html"))
+div_address = test_org_page.find('div', class_='CoAddress').p
+
+
+test = div_address.text.strip().split('\n')
+clean = [x.strip() for x in test if x.strip() != '']
+clean[0]
+clean[1].split(',')[0]
+clean[1].split(' ')[1]
+clean[1].split(' ')[2]
+
+
+div_contact = test_org_page.find('div', class_='contact').p
+ugly_contact_list = div_contact.text.strip().split('\n')
+pretty_contact_list = [x.strip() for x in ugly_contact_list if x.strip() != '']
+
+
+
+
+
+scrape_time_elapsed = timeit.default_timer() - scrape_start_time    
+print "Scrape time elapsed: %d" %scrape_time_elapsed
+
+
+# write data to frame
+file_io_start_time = timeit.default_timer()
+
+master_frame = pandas.DataFrame()
+
+master_frame["School Name"] = school_name
+
+
+
+print master_frame.head(5)
+
+# write frame to file
+master_frame.to_csv("/Users/Steve/Dropbox/programming/Python/web-scraping/data/agrm.csv", encoding='utf-8', index=False)   
+    
+file_io_time_elapsed = timeit.default_timer() - file_io_start_time  
+
+print "Scrape time elapsed: %d" %file_io_time_elapsed
+
 
 

@@ -18,7 +18,7 @@ from time import sleep
 # open Chrome developer tools, click "Network," and submit the form. 
 # In the results, click the first item (SubmitRequest item), and look at the headers tab.
 # Grab the Request URL there and use it as the URL to send the post request to.
-# Scroll down to Form Data at the bottom, and find the name:value pair parameter
+# Scroll down to Form Data at the bottom, and find the name:value pair argument
 # needed to pass to the post method. In this case, it is SelectedState:<state 2 digit>.
 # For example, SelectedState:AL
 
