@@ -22,13 +22,12 @@ import requests
 import timeit
 from time import sleep
 import random
+import os
 
 base_url = 'http://www.agrm.org//agrm/Locate_a_Mission.asp'
 # post_url = 'http://www.agrm.org/assnfe/CompanyDirectory.asp'
 # country_dict = {'clCD_CountryID':181}
 # first_page = s.post(post_url, country_dict)
-
-s = requests.Session()  
 
 first_page = BeautifulSoup(open("/Users/Steve/Dropbox/programming/Python/web-scraping/AGRM/agrm-first-200.html"))
 second_page = BeautifulSoup(open("/Users/Steve/Dropbox/programming/Python/web-scraping/AGRM/agrm-rest.html"))
@@ -44,7 +43,6 @@ zip_code = []
 phone = []
 website = []
 email_address = []
-services = []
 agrm_page_url = []
 
 # pull first chunks of data, including urls for each organization's page where more data can be found
@@ -69,6 +67,8 @@ for i in range(0, len(page_list)):
         print v_phone
         
 # now pull data from each organization's page
+# make an html file for every org's page just to be safe
+s = requests.Session() 
 for k in range(0, len(agrm_page_url)):
     org_response = s.get(agrm_page_url[k])
     # save entire HTML doc to file in case I get blocked by the server with subsequent requests
@@ -76,7 +76,13 @@ for k in range(0, len(agrm_page_url)):
     file = open("/Users/Steve/Desktop/agrm-pages/%s.html" %org[k], "w")
     file.write(raw_html)
     file.close()
-    org_soup = BeautifulSoup(raw_html)
+    sleep(random.randint(5, 20))
+        
+        
+# create list of html files to parse through
+org_site_list = os.listdir("/Users/Steve/Desktop/agrm-pages/)
+for p in range(0, len(org_site_list)):
+    org_soup = BeautifulSoup(open(org_site_list[p]))
     div_address = org_soup.find('div', class_='CoAddress').p
     ugly_addr_list = div_address.text.strip().split('\n')
     pretty_addr_list = [x.strip() for x in ugly_addr_list if x.strip() != '']
@@ -104,17 +110,28 @@ for k in range(0, len(agrm_page_url)):
     email_address.append(v_email)
     print v_email
 
-    # services
+# write data to frame
+master_frame = pandas.DataFrame()
+master_frame["Organization"] = org
+master_frame["Street Address"] = street_address
+master_frame["City"] = city
+master_frame["State"] = state
+master_frame["Zip Code"] = zip_code
+master_frame["Phone Number"] = phone
+master_frame["Website"] = website
+master_frame["Email Address"] = email_address
+
+print master_frame.head(5)
+
+# write frame to file
+master_frame.to_csv("/Users/Steve/Dropbox/programming/Python/web-scraping/data/agrm.csv", encoding='utf-8', index=False)   
     
-    sleep(random.randint(15, 60))
+    
+
     
     
     
-    
-    
-    
-    
-    
+########################### TESTING ############
     
 test_org_page = BeautifulSoup(open("/Users/Steve/Dropbox/programming/Python/web-scraping/AGRM/test_org_page.html"))
 div_address = test_org_page.find('div', class_='CoAddress').p
@@ -139,23 +156,7 @@ scrape_time_elapsed = timeit.default_timer() - scrape_start_time
 print "Scrape time elapsed: %d" %scrape_time_elapsed
 
 
-# write data to frame
-file_io_start_time = timeit.default_timer()
 
-master_frame = pandas.DataFrame()
-
-master_frame["School Name"] = school_name
-
-
-
-print master_frame.head(5)
-
-# write frame to file
-master_frame.to_csv("/Users/Steve/Dropbox/programming/Python/web-scraping/data/agrm.csv", encoding='utf-8', index=False)   
-    
-file_io_time_elapsed = timeit.default_timer() - file_io_start_time  
-
-print "Scrape time elapsed: %d" %file_io_time_elapsed
 
 ######################### detail test
 page = requests.get('http://www.agrm.org/assnfe/CompanyDirectory.asp?MODE=VIEW&SEARCH_TYPE=13&ID=100025')
@@ -185,13 +186,14 @@ print v_zip
 div_contact = org_soup.find('div', class_='contact').p
 ugly_contact_list = div_contact.text.strip().split('\n')
 pretty_contact_list = [x.replace(u'\xa0', u'').strip() for x in ugly_contact_list if x.strip() != '']
-v_website = pretty_contact_list[1][pretty_contact_list[i].find(':') +1 :].strip().encode('utf-8')   
+v_website = pretty_contact_list[1][pretty_contact_list[i].find(':') +1 :].strip()   
 website.append(v_website)
 print v_website
 # email_address
-v_email = pretty_contact_list[4][pretty_contact_list[4].find(':') +1 :].strip().encode('utf-8')
+v_email = pretty_contact_list[4][pretty_contact_list[4].find(':') +1 :].strip()
 email_address.append(v_email)
 print v_email
+
 
 
 
