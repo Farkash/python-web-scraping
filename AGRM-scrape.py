@@ -47,7 +47,7 @@ email_address = []
 services = []
 agrm_page_url = []
 
-# pull first chunks of data, including urls for each ogranization's page where more data can be found
+# pull first chunks of data, including urls for each organization's page where more data can be found
 for i in range(0, len(page_list)):
     table = page_list[i].find("table")
     rows = table.findAll('tr')
@@ -71,42 +71,53 @@ for i in range(0, len(page_list)):
 # now pull data from each organization's page
 for k in range(0, len(agrm_page_url)):
     org_response = s.get(agrm_page_url[k])
-    org_soup = BeautifulSoup(org_response)
+    # save entire HTML doc to file in case I get blocked by the server with subsequent requests
+    raw_html = org_response.content
+    file = open("/Users/Steve/Desktop/agrm-pages/%s.html" %org[k], "w")
+    file.write(raw_html)
+    file.close()
+    org_soup = BeautifulSoup(raw_html)
     div_address = org_soup.find('div', class_='CoAddress').p
     ugly_addr_list = div_address.text.strip().split('\n')
     pretty_addr_list = [x.strip() for x in ugly_addr_list if x.strip() != '']
     v_street = pretty_addr_list[0]
     street_address.append(v_street)
     print v_street
-    v_city = pretty_addr_list[1].split(',')[0]
-    city.append(v_city)
-    print v_city
-    v_state = pretty_addr_list[1].split(' ')[1]
-    state.append(v_state)
-    print v_state
+    # v_city = pretty_addr_list[1].split(',')[0]
+    # city.append(v_city)
+    # print v_city
+    # v_state = pretty_addr_list[1].split(' ')[1]
+    # state.append(v_state)
+    # print v_state
     v_zip = pretty_addr_list[1].split(' ')[2]    
     zip_code.append(z_vip)
     print v_zip
     # website
     div_contact = org_soup.find('div', class_='contact').p
     ugly_contact_list = div_contact.text.strip().split('\n')
-    pretty_contact_list = [x.strip() for x in ugly_contact_list if x.strip() != '']
-        
+    pretty_contact_list = [x.replace(u'\xa0', u'').strip() for x in ugly_contact_list if x.strip() != '']
+    v_website = pretty_contact_list[1][pretty_contact_list[i].find(':') +1 :].strip().encode('utf-8')   
+    website.append(v_website)
+    print v_website
     # email_address
-    
+    v_email = pretty_contact_list[4][pretty_contact_list[4].find(':') +1 :].strip().encode('utf-8')
+    email_address.append(v_email)
+    print v_email
+
     # services
-    
     
     sleep(random.randint(15, 60))
     
-
-
-
-
-
+    
+    
+    
+    
+    
+    
+    
+    
 test_org_page = BeautifulSoup(open("/Users/Steve/Dropbox/programming/Python/web-scraping/AGRM/test_org_page.html"))
 div_address = test_org_page.find('div', class_='CoAddress').p
-
 
 test = div_address.text.strip().split('\n')
 clean = [x.strip() for x in test if x.strip() != '']
@@ -118,10 +129,10 @@ clean[1].split(' ')[2]
 
 div_contact = test_org_page.find('div', class_='contact').p
 ugly_contact_list = div_contact.text.strip().split('\n')
-pretty_contact_list = [x.strip() for x in ugly_contact_list if x.strip() != '']
+pretty_contact_list = [x.replace(u'\xa0', u'').strip() for x in ugly_contact_list if x.strip() != '']
+v_website = pretty_contact_list[1][pretty_contact_list[i].find(':') +1 :].strip().encode('utf-8')
 
-
-
+v_email = pretty_contact_list[4][pretty_contact_list[4].find(':') +1 :].strip().encode('utf-8')
 
 
 scrape_time_elapsed = timeit.default_timer() - scrape_start_time    
@@ -145,6 +156,42 @@ master_frame.to_csv("/Users/Steve/Dropbox/programming/Python/web-scraping/data/a
 file_io_time_elapsed = timeit.default_timer() - file_io_start_time  
 
 print "Scrape time elapsed: %d" %file_io_time_elapsed
+
+######################### detail test
+page = requests.get('http://www.agrm.org/assnfe/CompanyDirectory.asp?MODE=VIEW&SEARCH_TYPE=13&ID=100025')
+org_name = "The Foundry Ministries"
+
+raw_html = page.content
+file = open("/Users/Steve/Desktop/%s.html" %org_name, "w")
+file.write(raw_html)
+file.close()
+org_soup = BeautifulSoup(raw_html)
+div_address = org_soup.find('div', class_='CoAddress').p
+ugly_addr_list = div_address.text.strip().split('\n')
+pretty_addr_list = [x.strip() for x in ugly_addr_list if x.strip() != '']
+v_street = pretty_addr_list[0]
+street_address.append(v_street)
+print v_street
+# v_city = pretty_addr_list[1].split(',')[0]
+# city.append(v_city)
+# print v_city
+# v_state = pretty_addr_list[1].split(' ')[1]
+# state.append(v_state)
+# print v_state
+v_zip = pretty_addr_list[1].split(' ')[2]    
+zip_code.append(v_zip)
+print v_zip
+# website
+div_contact = org_soup.find('div', class_='contact').p
+ugly_contact_list = div_contact.text.strip().split('\n')
+pretty_contact_list = [x.replace(u'\xa0', u'').strip() for x in ugly_contact_list if x.strip() != '']
+v_website = pretty_contact_list[1][pretty_contact_list[i].find(':') +1 :].strip().encode('utf-8')   
+website.append(v_website)
+print v_website
+# email_address
+v_email = pretty_contact_list[4][pretty_contact_list[4].find(':') +1 :].strip().encode('utf-8')
+email_address.append(v_email)
+print v_email
 
 
 
