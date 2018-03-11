@@ -15,6 +15,7 @@ import pandas
 import requests
 import timeit
 from time import sleep
+import random
 
 # since I'll be submitting a form to get results back, I will be using
 # the POST HTTP method. Then the GET method to paginate through search result
@@ -32,6 +33,31 @@ from time import sleep
 
 # starting URL that has the primary form I want to submit searches on (one for
 # each state)
+
+# Function to grab every school name and school page url from the list of
+# schools, paginating through the subsets of school listings since the 
+# site only returns 10 at a time. Make sure to sleep between each call 
+# so the site doesn't block me from too many rapid get requests. 
+# Maybe a random pause between 5 and 20 seconds. 
+
+def find_schools(post_url):
+    s = requests.Session()
+    url = post_url
+    while True:
+        # pull all the data from url
+        response = s.get(url)
+        response_content = response.content
+        soup = BeautifulSoup(response_content, "lxml")
+        get_school_name(soup)
+        get_school_page_url(soup)
+        # find next button url and overwrite url var
+        next_page_anchor = soup.find("a", class_="pagerNext pager-next-button")
+        if(next_page_anchor == None):
+            break
+        else:
+            url = next_page_anchor['href']
+            sleep(random.randint(1,20))
+
 
 
 # Function that takes a list of URLs for which I want to place "get"
@@ -60,8 +86,8 @@ state_short = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL",
     "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC",
     "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT",
     "VA", "WA", "WV", "WI", "WY"]
-school_name = []
-school_page_url = []
+
+
 street_address = []
 city = []
 state = []
@@ -88,6 +114,7 @@ special_needs = []
 # custom functions
 # this pulls the text of the school name from the link object
 def get_school_name(soup_object):
+    school_name = []
     school_list = soup_object.findAll("a", id="Details_item.cst_key")
     for i in range(0, len(school_list)):
         school_name.append(school_list[i].text.encode('utf-8'))
@@ -95,6 +122,8 @@ def get_school_name(soup_object):
 
 # This one pulls the actual URL from the HREF attribute of the link object
 def get_school_page_url(soup_object):
+    school_page_url = []
+    curr_st_school_page_url = []
     school_urls = soup_object.findAll("a", id="Details_item.cst_key")
     for i in range(0, len(school_urls)):
         school_page_url.append(base_url + school_urls[i]['href'])
@@ -448,7 +477,7 @@ scrape_start_time = timeit.default_timer()
 # post field selections (values in the form) must be passed to post request as a dictionary
 # make a dictionary (key-value pair associative array) of state to search. 
 for st in range(0, len(state_short)):
-    curr_st_school_page_url = []
+    # curr_st_school_page_url = []
     state_dict = {'SelectedState':state_short[st]}
     post_response = s.post(post_url, state_dict)
     soup = BeautifulSoup(post_response.content, "lxml")
