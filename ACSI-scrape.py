@@ -1,10 +1,15 @@
+# shebang line to make sure this uses python 3
+
+#!/usr/bin/python3
+
 # Association of Christian Schools International (ACSI)
 # https://www.acsi.org/
-# this site requires the submission of forms and capture of the search results. 
-# Cannot use explicit URLs to navigate. Furthermore, result sets are returned only 10
-# at a time, so results will have to be captured with multiple iterations. 
+# this site requires the submission of forms and capture of the search
+# results.
+# Cannot use explicit URLs to navigate. Furthermore, result sets are returned
+# only 10
+# at a time, so results will have to be captured with multiple iterations.
 
-import urllib2
 from bs4 import BeautifulSoup
 import pandas
 import requests
@@ -12,29 +17,49 @@ import timeit
 from time import sleep
 
 # since I'll be submitting a form to get results back, I will be using
-# the POST HTTP method. Then the GET method to paginate through search result pages.
+# the POST HTTP method. Then the GET method to paginate through search result
+# pages.
 
 # Analyze the page's post form process and learn details from the post header
-# open Chrome developer tools, click "Network," and submit the form. 
-# In the results, click the first item (SubmitRequest item), and look at the headers tab.
+# open Chrome developer tools, click "Network," and submit the form.
+# In the results, click the first item (SubmitRequest item), and look at the
+# headers tab.
 # Grab the Request URL there and use it as the URL to send the post request to.
 # Scroll down to Form Data at the bottom, and find the name:value pair argument
-# needed to pass to the post method. In this case, it is SelectedState:<state 2 digit>.
+# needed to pass to the post method. In this case, it is
+# SelectedState:<state 2 digit>.
 # For example, SelectedState:AL
 
+# starting URL that has the primary form I want to submit searches on (one for
+# each state)
 
 
-# starting URL that has the primary form I want to submit searches on (one for each state)
+# Function that takes a list of URLs for which I want to place "get"
+# requests, capture HTML content, and write to file for each site.
+def curate_html(url_list, school_name_list, full_path):
+    s = requests.Session()
+    for i in range(0, len(url_list)):
+        response = s.get(url_list[i])
+        response_content = response.content
+        fh = open(f"{full_path}html_files/{school_name_list[i]}.html", "w")
+        fh.write(response_content)
+        fh.close()
+
+
+# how to read in html files:
+# file = open("hello.html", "r")
+# raw_html = file.read()
+# soup = BeautifulSoup(raw_html, "lxml")
+
+
 base_url = 'https://www.acsi.org'
 post_url = 'https://www.acsi.org/member-search/searchresults/SubmitResult'
 # list declarations:
-state_short = [
-    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL", "GA", "HI", "ID", "IL", 
-"IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", 
-"NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", 
-"UT", "VT", "VA", "WA", "WV", "WI", "WY"
-			]
-			
+state_short = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL",
+    "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA",
+    "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC",
+    "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT",
+    "VA", "WA", "WV", "WI", "WY"]
 school_name = []
 school_page_url = []
 street_address = []
@@ -56,20 +81,25 @@ grade_levels_taught = []
 year_founded = []
 acsi_accreditation_status = []
 grades_accredited = []
-other_accreditations = []		
+other_accreditations = []
 special_needs = []
-			
+
+
 # custom functions
+# this pulls the text of the school name from the link object
 def get_school_name(soup_object):
     school_list = soup_object.findAll("a", id="Details_item.cst_key")
     for i in range(0, len(school_list)):
         school_name.append(school_list[i].text.encode('utf-8'))
 
+
+# This one pulls the actual URL from the HREF attribute of the link object
 def get_school_page_url(soup_object):
     school_urls = soup_object.findAll("a", id="Details_item.cst_key")
-    for i in range(0,len(school_urls)):
+    for i in range(0, len(school_urls)):
         school_page_url.append(base_url + school_urls[i]['href'])
         curr_st_school_page_url.append(school_urls[i]['href'])
+
 
 def get_details(soup_object):
     # narrow it down to the first div of data (1 of 2):
