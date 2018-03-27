@@ -16,9 +16,11 @@ import requests
 import timeit
 from time import sleep
 import random
+from os import listdir
 
 base_url = 'https://www.acsi.org'
 post_url = 'https://www.acsi.org/member-search/searchresults/SubmitResult?startRow=0&rowsPerPage=3000'
+data_dir = "/Users/Steve/Dropbox/programming/Python/web-scraping/data/acsi/"
 
 # declare public lists:
 school_name = []
@@ -106,25 +108,43 @@ def find_schools(post_url):
     school_frame = pandas.DataFrame()
     school_frame['school_name'] = school_name
     school_frame['school_page_url'] = school_page_url
-    school_frame.to_csv("/Users/Steve/Dropbox/programming/Python/web-scraping/data/acsi_schools.csv", encoding='utf-8', index=False)   
+    school_frame.to_csv("/Users/Steve/Dropbox/programming/Python/web-scraping/data/acsi-schools.csv", encoding='utf-8', index=False)   
    
+
+# Call the functions to write out the school and school URL file
+find_schools(post_url)
+# Now the file of schools has been created, and is a proxy for querying the
+# actual site itself and tempting it to block me. 
+schools = pandas.read_csv("/Users/Steve/Dropbox/programming/Python/web-scraping/data/acsi-schools.csv")
+url_list = schools['school_page_url']
+school_name_list = schools['school_name']
+for z in range(0, len(school_name_list)):
+    school_name_list[z] = school_name_list[z].replace( "/", "-")   
+
 
 # Function that takes a list of URLs for which I want to place "get"
 # requests, capture HTML content, and write to file for each site.
-def curate_html(url_list, school_name_list, full_path):
+def curate_html(url_list, school_name_list, data_dir):
     s = requests.Session()
     for i in range(0, len(url_list)):
         response = s.get(url_list[i])
         response_content = response.content
-        fh = open(f"{full_path}html_files/{school_name_list[i]}.html", "w")
+        fh = open(f"{data_dir}html-files/{school_name_list[i]}.html", "wb")
         fh.write(response_content)
         fh.close()
+        sleep(random.randint(1, 3))
+
+curate_html(url_list, school_name_list, data_dir)
 
 
-# how to read in html files:
-# file = open("hello.html", "r")
-# raw_html = file.read()
-# soup = BeautifulSoup(raw_html, "lxml")
+
+# now, need to loop over html files in dir and parse through them all.
+# Build in extensive testing and error handling. 
+# First step to that is probably to split the rest of the work into
+# smaller functions and evaluate them separately.
+
+
+
 
 
 # list declarations:
@@ -133,6 +153,94 @@ state_short = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL",
     "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC",
     "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT",
     "VA", "WA", "WV", "WI", "WY"]
+
+
+#get a list of all the html files:
+file_list = listdir("/Users/Steve/Dropbox/programming/Python/web-scraping/data/acsi/html-files")
+
+# load a file
+
+
+# function to gather basic info about page structure.
+
+# I need to do some heavy profiling since the contents of the
+# address paragraph can vary so much. 
+# Limit to U.S.
+# Assume first item is street
+# Secord part of second item is city, etc.
+
+
+
+
+def analyze_page(soup_object):
+    div1 = soup_object.find('div', class_='col1-interior')
+    div1_h1 = div1.find('h2')
+    div1_h2 = div1_h1.find_next_sibling('h2')
+    div1_h3 = div1_h2.find_next_sibling('h2')
+    if div1_h1 != None:
+        if div1_h1.text == "Address":
+            address_p = div1_h1.find_next_sibling('p')
+            p_list = address_p.get_text().split("\n")
+            p_list = [x.strip() for x in p_list]    
+            str_addr = p_list[0]
+            print (str_addr)
+            v_city = p_list[1][:p_list[1].find(",")]
+            print (v_city)
+            state = p_list[1][p_list[1].find(",") + 1 : p_list[1].find(",") + 4 ].strip()
+            print (state)
+            zip = p_list[1][p_list[1].find(",") + 4 :].strip()
+            print (zip)
+            phone = p_list[3][p_list[3].find(':') +2:]
+            print (phone)
+            fax = p_list[4][p_list[4].find(':') +2:]
+            print (fax)
+            h_email = p_list[5]
+            print (h_email)
+            school_homepage = p_list[6]
+            print (school_homepage)
+
+
+for i in range(0, len(file_list)):
+    html = open(f"{data_dir}html-files/{file_list[i]}", "r")
+    soup_to_nuts = BeautifulSoup(html, "lxml")
+    html.close()
+    analyze_page(soup_to_nuts)
+
+# test this function on one file to see how it works. Pass it a soup object.
+def first_div_stripper(soup_object):
+    div1 = soup_object.find('div', class_='col1-interior')
+    print(div1.content)
+    first_heading = div1.find('h2')
+    print(f"First heading: {first_heading}")
+    if first_heading.text == 'Address':
+        address_p = first_heading.find_next_sibling('p')
+        #get all data from this <p>. Should be ok to just use content list indexes.
+        p_list = address_p.contents
+        str_addr = p_list[0].strip().encode('utf-8')
+        print str_addr
+        street_address.append(str_addr)
+        v_city = p_list[2][:p_list[2].find(",")].strip().encode('utf-8')
+        print v_city
+        city.append(v_city)
+        zip = p_list[2][p_list[2].find(",") + 5 :].strip().encode('utf-8')
+        print zip
+        zip_code.append(zip)
+        phone = p_list[6][p_list[6].find(':') +2:].strip().encode('utf-8')
+        print phone
+        phone_number.append(phone)
+        fax = p_list[8][p_list[8].find(':') +2:].strip().encode('utf-8')
+        print fax
+        fax_number.append(fax)
+        h_email = p_list[11].text.encode('utf-8')
+        print h_email
+        primary_contact_email_address.append(h_email)
+        school_homepage = p_list[14].text.encode('utf-8')
+        print school_homepage
+        website_url.append(school_homepage)    
+
+
+
+
 
 
 def get_details(soup_object):
@@ -163,7 +271,8 @@ def get_details(soup_object):
         primary_contact_email_address.append(h_email)
         school_homepage = p_list[14].text.encode('utf-8')
         print school_homepage
-        website_url.append(school_homepage)
+        website_url.append(school_homepage)    
+        
         #move on to next section of the first div 
         second_heading = address_p.find_next_sibling('h2')
         if second_heading.text == 'ACSI Accredited':
@@ -551,15 +660,6 @@ master_frame.to_csv("/Users/Steve/Dropbox/programming/Python/web-scraping/data/a
 file_io_time_elapsed = timeit.default_timer() - file_io_start_time  
 
 print "Scrape time elapsed: %d" %file_io_time_elapsed
-
-    
-    
-    
-# easier way? Can I just turn the results returned limit in the post request to unlimited?
-# Or actually, I think I just make a post request with no parameters (form selections) by just
-# navigating to the post url!
-# https://www.acsi.org/member-search/searchresults/SubmitResult
-# and then just paginate through the search results until the nextpage val is null?
 
 
 
