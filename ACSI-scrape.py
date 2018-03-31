@@ -169,10 +169,43 @@ file_list = listdir("/Users/Steve/Dropbox/programming/Python/web-scraping/data/a
 # Assume first item is street
 # Secord part of second item is city, etc.
 
+# Make a function that splits div <p> content down to a list.
+# Then store all of the lists for each page.
+# Then return a count of lines in all of the lists. 
+# Are the lists the same length? If so, that's a place to start.
 
-
+analyze_p_list = []
+p_list_lengths = []
 
 def analyze_page(soup_object):
+    div1 = soup_object.find('div', class_='col1-interior')
+    div1_h1 = div1.find('h2')
+    div1_h2 = div1_h1.find_next_sibling('h2')
+    div1_h3 = div1_h2.find_next_sibling('h2')
+    if div1_h1 != None:
+        if div1_h1.text == "Address":
+            address_p = div1_h1.find_next_sibling('p')
+            p_list = address_p.get_text().split("\n")
+            p_list = [x.strip() for x in p_list]
+            print(len(p_list))
+            # print(p_list)
+            sleep(.1)
+            p_list_lengths.append(len(p_list))
+            analyze_p_list.append(p_list)
+
+
+
+for i in range(0, len(file_list)):
+    html = open(f"{data_dir}html-files/{file_list[i]}", "r")
+    soup_to_nuts = BeautifulSoup(html, "lxml")
+    html.close()
+    analyze_page(soup_to_nuts)   
+
+
+ 
+
+
+def first_div_parser(soup_object):
     div1 = soup_object.find('div', class_='col1-interior')
     div1_h1 = div1.find('h2')
     div1_h2 = div1_h1.find_next_sibling('h2')
@@ -207,7 +240,7 @@ for i in range(0, len(file_list)):
     analyze_page(soup_to_nuts)
 
 # test this function on one file to see how it works. Pass it a soup object.
-def first_div_stripper(soup_object):
+def blah(soup_object):
     div1 = soup_object.find('div', class_='col1-interior')
     print(div1.content)
     first_heading = div1.find('h2')
