@@ -599,38 +599,48 @@ def get_accreditation(soup_object):
                 accred_dict[accred_list[j][: accred_list[j].find(':')].strip()] = accred_list[j][accred_list[j].find(':') +1 :].strip()
             # ACSI Accreditation
             if 'ACSI Accreditation' in accred_dict:
-                v_acsi_accreditation_status = stats_dict.get('ACSI Accreditation')
+                v_acsi_accreditation_status = accred_dict.get('ACSI Accreditation')
             else:
                 v_acsi_accreditation_status = ''
             print(v_acsi_accreditation_status)
             acsi_accreditation_status.append(v_acsi_accreditation_status)
             # Grades Accredited
             if 'Grades Accredited' in accred_dict:
-                v_grades_accredited = stats_dict.get('Grades Accredited')
+                v_grades_accredited = accred_dict.get('Grades Accredited')
             else:
                 v_grades_accredited= ''
             print(v_grades_accredited)
             grades_accredited.append(v_grades_accredited)
 
 
-
-
+for i, v in enumerate(file_list):
+    soup_to_nuts = file_to_soup(f"{data_dir}html-files/{file_list[i]}")
+    get_accreditation(soup_to_nuts) 
 
 
 # find the primary contact person section in second div, parse it
+primary_contact_name = []
+def get_primary_contact(soup_object):
+    col1_div = soup_object.find('div', class_='col1-interior')
+    address_h = col1_div.find('h2', text = 'Address')
+    address_p = address_h.find_next_sibling('p')
+    address_list = address_p.get_text().split("\n")
+    address_list = [x.strip() for x in address_list]
+    if address_list[2] == 'UNITED STATES':    
+        col2_div = soup_object.find('div', class_='col2-interior')
+        main_contact_p = col2_div.find('p')
+        if main_contact_p != None:
+            contact_person = main_contact_p.text
+            primary_contact_name.append(contact_person)
+        else:
+            contact_person = ''
+            primary_contact_name.append(contact_person)
+    
 
 
-
-
-
-
-
-
-
-
-
-
-
+for i, v in enumerate(file_list):
+    soup_to_nuts = file_to_soup(f"{data_dir}html-files/{file_list[i]}")
+    get_primary_contact(soup_to_nuts) 
 
 
 
@@ -656,19 +666,6 @@ def get_details(soup_object):
     div1 = soup_object.find('div', class_='col1-interior')
     first_heading = div1.find('h2')
     
-        
-        #move on to next section of the first div 
-        second_heading = address_p.find_next_sibling('h2')
-        if second_heading.text == 'ACSI Accredited':
-            accredit_p = second_heading.find_next_sibling('p')
-            #grab all the accreditation data
-            p_list_accredit = accredit_p.contents
-            accredit = p_list_accredit[0][p_list_accredit[0].find(':') + 2 :].strip().encode('utf-8')
-            print accredit 
-            acsi_accreditation_status.append(accredit)
-            grades_accredit = p_list_accredit[2][p_list_accredit[2].find(':') + 2 :].strip().encode('utf-8')
-            print grades_accredit
-            grades_accredited.append(grades_accredit)
         
 
     # jump down to the next div
