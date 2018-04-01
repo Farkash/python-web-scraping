@@ -325,7 +325,6 @@ for i, v in enumerate(file_list):
     get_accreditation(soup_to_nuts) 
     get_primary_contact(soup_to_nuts)
 
-
 # write all lists to pandas frame to prepare for extract
 master_frame = pandas.DataFrame()
 
@@ -338,7 +337,6 @@ master_frame["Primary Contact Name"] = primary_contact_name
 master_frame["Primary Contact Email"] = primary_contact_email_address
 master_frame["Phone Number"] = phone_number
 master_frame["Fax Number"] = fax_number
-master_frame["ACSI Page"] = school_page_url
 master_frame["School Website"] = website_url
 master_frame["Early Education Students"] = early_education_enrollment
 master_frame["Elementary Students"] = elementary_enrollment
@@ -360,5 +358,4 @@ master_frame["Online"] = online
 print(master_frame.head(5))
 
 # write frame to file
-master_frame.to_csv("/Users/Steve/Dropbox/programming/Python/web-scraping/data/acsi_new.csv", encoding='utf-8', index=False)   
-
+master_frame.to_csv("/Users/Steve/Dropbox/programming/Python/web-scraping/data/acsi_new.csv", encoding='utf-8', index=False)
