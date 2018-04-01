@@ -1,15 +1,3 @@
-# shebang line to make sure this uses python 3
-
-#!/usr/bin/python3
-
-# Association of Christian Schools International (ACSI)
-# https://www.acsi.org/
-# this site requires the submission of forms and capture of the search
-# results.
-# Cannot use explicit URLs to navigate. Furthermore, result sets are returned
-# only 10
-# at a time, so results will have to be captured with multiple iterations.
-
 from bs4 import BeautifulSoup
 import pandas
 import requests
@@ -23,47 +11,6 @@ base_url = 'https://www.acsi.org'
 post_url = 'https://www.acsi.org/member-search/searchresults/SubmitResult?startRow=0&rowsPerPage=3000'
 data_dir = "/Users/Steve/Dropbox/programming/Python/web-scraping/data/acsi/"
 
-# declare public lists:
-school_name = []
-school_page_url = []
-street_address = []
-city = []
-state = []
-zip_code = []
-primary_contact_name = []
-primary_contact_email_address = []
-phone_number = []
-fax_number = []
-website_url = []
-
-
-
- 
-# since I'll be submitting a form to get results back, I will be using
-# the POST HTTP method. Then the GET method to paginate through search result
-# pages.
-
-# Analyze the page's post form process and learn details from the post header
-# open Chrome developer tools, click "Network," and submit the form.
-# In the results, click the first item (SubmitRequest item), and look at the
-# headers tab.
-# Grab the Request URL there and use it as the URL to send the post request to.
-# Scroll down to Form Data at the bottom, and find the name:value pair argument
-# needed to pass to the post method. In this case, it is
-# SelectedState:<state 2 digit>.
-# For example, SelectedState:AL
-
-# starting URL that has the primary form I want to submit searches on (one for
-# each state)
-
-# Function to grab every school name and school page url from the list of
-# schools, paginating through the subsets of school listings since the 
-# site only returns 10 at a time. Make sure to sleep between each call 
-# so the site doesn't block me from too many rapid get requests. 
-# Maybe a random pause between 5 and 20 seconds. 
-
-# custom functions
-# this pulls the text of the school name from the link object
 def get_school_name(soup_object):
     print("List of schools for this get response:")
     school_list = soup_object.findAll("a", id="Details_item.cst_key")
@@ -71,8 +18,6 @@ def get_school_name(soup_object):
         school_name.append(school_list[i].text)
         print(school_list[i].text.encode('utf-8'))
 
-
-# This one pulls the actual URL from the HREF attribute of the link object
 def get_school_page_url(soup_object):
     print("List of school urls for this get response:")
     curr_st_school_page_url = []
@@ -82,14 +27,6 @@ def get_school_page_url(soup_object):
         curr_st_school_page_url.append(school_urls[i]['href'])
         print(school_urls[i]['href'])
 
-
-# this version is good if I can't control the amount of search results 
-# returned by the post request. 
-# BUT I can! I can pass the URL query string of ?startRow=0&rowsPerPage=3000
-# So, the post URL becomes 
-# https://www.acsi.org/member-search/searchresults/SubmitResult?startRow=0&rowsPerPage=3000
-# take the post url, return the content, pull out the school name and urls, 
-# and create a pandas dataframe. Then write out to file.
 def find_schools(post_url):
     s = requests.Session()
     response = s.get(post_url)
@@ -101,7 +38,6 @@ def find_schools(post_url):
     school_frame['school_name'] = school_name
     school_frame['school_page_url'] = school_page_url
     school_frame.to_csv("/Users/Steve/Dropbox/programming/Python/web-scraping/data/acsi-schools.csv", encoding='utf-8', index=False)   
-   
 
 # Call the functions to write out the school and school URL file
 find_schools(post_url)
@@ -128,25 +64,6 @@ def curate_html(url_list, school_name_list, data_dir):
 
 curate_html(url_list, school_name_list, data_dir)
 
-
-
-# now, need to loop over html files in dir and parse through them all.
-# Build in extensive testing and error handling. 
-# First step to that is probably to split the rest of the work into
-# smaller functions and evaluate them separately.
-
-
-
-
-
-# list declarations:
-state_short = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL",
-    "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA",
-    "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC",
-    "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT",
-    "VA", "WA", "WV", "WI", "WY"]
-
-
 #get a list of all the html files:
 file_list = listdir("/Users/Steve/Dropbox/programming/Python/web-scraping/data/acsi/html-files")
 
@@ -157,8 +74,7 @@ def file_to_soup(file_path):
     html.close()
     return soup_to_nuts
 
-# analyze_p_list = [x for x in analyze_p_list if x[2] == 'UNITED STATES']
-
+# get the contact info for the school
 school_name = []
 school_page_url = []
 street_address = []
@@ -260,7 +176,6 @@ for i in range(0, len(file_list)):
 
 Counter(h3_list)
 
-# how to find a heading with specific text?
 stats_heading_list = []
 def find_statistics_h2(soup_object):
     div1 = div1 = soup_object.find('div', class_='col1-interior')
@@ -658,7 +573,7 @@ master_frame["EFL"]= efl
 master_frame["Home School"] = home_school
 master_frame["Online"] = online
 
-print master_frame.head(5)
+print(master_frame.head(5))
 
 # write frame to file
 master_frame.to_csv("/Users/Steve/Dropbox/programming/Python/web-scraping/data/acsi_new.csv", encoding='utf-8', index=False)   
