@@ -397,6 +397,7 @@ other_accreditation
 """
 
 ########## end PROFILING ##########
+
 # find the statistics section and parse it
 early_education_enrollment = []
 elementary_enrollment = []
@@ -424,7 +425,8 @@ def get_statistics(soup_object):
     stats_h = col1_div.find('h2', text = 'Statistics')
     stats_p = stats_h.find_next_sibling('p')
     stats_list = stats_p.get_text().split("\n")
-    stats_list = [x.strip() for x in stats_list]    
+    stats_list = [x.strip() for x in stats_list]   
+    stats_list = [x for x in stats_list if x != '']
     if address_list[2] == 'UNITED STATES':
         # set up and populate dictionary
         stats_dict = {}
@@ -439,27 +441,100 @@ def get_statistics(soup_object):
         early_education_enrollment.append(v_early_education_enrollment)
         # Elementary Enrollment
         if 'Elementary Enrollment' in stats_dict:
-            v_early_education_enrollment = stats_dict.get('Elementary Enrollment')
+            v_elementary_enrollment = stats_dict.get('Elementary Enrollment')
         else:
-            v_early_education_enrollment = ''
-        print(v_early_education_enrollment)
-        early_education_enrollment.append(v_early_education_enrollment)
+            v_elementary_enrollment = ''
+        print(v_elementary_enrollment)
+        elementary_enrollment.append(v_elementary_enrollment)
         # Middle School Enrollment
-
+        if 'Middle School Enrollment' in stats_dict:
+            v_middle_school_enrollment = stats_dict.get('Middle School Enrollment')
+        else:
+            v_middle_school_enrollment = ''
+        print(v_middle_school_enrollment)
+        middle_school_enrollment.append(v_middle_school_enrollment)
         # High School Enrollment
+        if 'High School Enrollment' in stats_dict:
+            v_high_school_enrollment = stats_dict.get('High School Enrollment')
+        else:
+            v_high_school_enrollment = ''
+        print(v_high_school_enrollment)
+        high_school_enrollment.append(v_high_school_enrollment)
         # Total Enrollment
+        if 'Total Enrollment' in stats_dict:
+            v_total_enrollment = stats_dict.get('Total Enrollment')
+        else:
+            v_total_enrollment = ''
+        print(v_total_enrollment)
+        total_enrollment.append(v_total_enrollment)
         # Grade Levels
+        if 'Grade Levels' in stats_dict:
+            v_grade_levels = stats_dict.get('Grade Levels')
+        else:
+            v_grade_levels = ''
+        print(v_grade_levels)
+        grade_levels.append(v_grade_levels)
         # Year Founded
+        if 'Year Founded' in stats_dict:
+            v_year_founded = stats_dict.get('Year Founded')
+        else:
+            v_year_founded = ''
+        print(v_year_founded)
+        year_founded.append(v_year_founded)
         # Boarding School
+        if 'Boarding School' in stats_dict:
+            v_boarding_school = stats_dict.get('Boarding School')
+        else:
+            v_boarding_school = ''
+        print(v_boarding_school)
+        boarding_school.append(v_boarding_school)
         # I20
+        if 'I20' in stats_dict:
+            v_i20 = stats_dict.get('I20')
+        else:
+            v_i20 = ''
+        print(v_i20)
+        i20.append(v_i20)
         # Special Needs
+        if 'Special Needs' in stats_dict:
+            v_special_needs = stats_dict.get('Special Needs')
+        else:
+            v_special_needs = ''
+        print(v_special_needs)
+        special_needs.append(v_special_needs)
         # EFL
+        if 'EFL' in stats_dict:
+            v_efl = stats_dict.get('EFL')
+        else:
+            v_efl = ''
+        print(v_efl)
+        efl.append(v_efl)
         # Home School
+        if 'Home School' in stats_dict:
+            v_home_school = stats_dict.get('Home School')
+        else:
+            v_home_school = ''
+        print(v_home_school)
+        home_school.append(v_home_school)
         # Online
+        if 'Online' in stats_dict:
+            v_online = stats_dict.get('Online')
+        else:
+            v_online = ''
+        print(v_online)
+        online.append(v_online)
         # Other Accreditation
+        if 'Other Accreditation' in stats_dict:
+            v_other_accreditation = stats_dict.get('Other Accreditation')
+        else:
+            v_other_accreditation = ''
+        print(v_other_accreditation)
+        other_accreditation.append(v_other_accreditation)
 
 
-
+for i, v in enumerate(file_list):
+    soup_to_nuts = file_to_soup(f"{data_dir}html-files/{file_list[i]}")
+    get_statistics(soup_to_nuts) 
 
 
 
