@@ -123,177 +123,6 @@ def get_contact_info(soup_object):
         print (school_homepage)
         website_url.append(school_homepage)
 
-
-for i in range(0, len(file_list)):
-    soup_to_nuts = file_to_soup(f"{data_dir}html-files/{file_list[i]}")
-    get_contact_info(soup_to_nuts)        
-
-
-######### PROFILING ##########
-
-# how often is the second heading "Statistics?"
-# how often is it "ACSI Accredited?"
-# how often is it null?
-h2_list = []
-def analyze_second_h2(soup_object):
-    div1 = soup_object.find('div', class_='col1-interior')
-    div1_h1 = div1.find('h2')
-    div1_h2 = div1_h1.find_next_sibling('h2')
-    div1_h3 = div1_h2.find_next_sibling('h2')
-    if div1_h2 != None:
-        print(div1_h2.text)
-        h2_list.append(div1_h2.text)
-
-
-for i in range(0, len(file_list)):
-    html = open(f"{data_dir}html-files/{file_list[i]}", "r")
-    soup_to_nuts = BeautifulSoup(html, "lxml")
-    html.close()
-    analyze_second_h2(soup_to_nuts)   
-
-Counter(h2_list)
-# Counter({'ACSI Accredited': 871, 'Statistics': 1581})
-
-h3_list = []
-def analyze_second_h3(soup_object):
-    div1 = soup_object.find('div', class_='col1-interior')
-    div1_h1 = div1.find('h2')
-    div1_h2 = div1_h1.find_next_sibling('h2')
-    div1_h3 = div1_h2.find_next_sibling('h2')
-    if div1_h3 != None:
-        print(div1_h3.text)
-        h3_list.append(div1_h3.text)
-    else:
-        print('None')
-        h3_list.append('None')
-
-
-for i in range(0, len(file_list)):
-    html = open(f"{data_dir}html-files/{file_list[i]}", "r")
-    soup_to_nuts = BeautifulSoup(html, "lxml")
-    html.close()
-    analyze_second_h3(soup_to_nuts)   
-
-Counter(h3_list)
-
-stats_heading_list = []
-def find_statistics_h2(soup_object):
-    div1 = div1 = soup_object.find('div', class_='col1-interior')
-    h2_stats = div1.find('h2', text = 'Statistics')
-    print(h2_stats.text)
-    stats_heading_list.append(h2_stats.text)
-
-for i in range(0, len(file_list)):
-    html = open(f"{data_dir}html-files/{file_list[i]}", "r")
-    soup_to_nuts = BeautifulSoup(html, "lxml")
-    html.close()
-    find_statistics_h2(soup_to_nuts) 
-
-
-#clean up stats list
-soup_object = file_to_soup(f"{data_dir}html-files/{file_list[i]}")
-col1_div = soup_object.find('div', class_='col1-interior')
-stats_h = col1_div.find('h2', text = 'Statistics')
-stats_p = stats_h.find_next_sibling('p')
-stats_list = stats_p.get_text().split("\n")
-stats_list = [x.strip() for x in stats_list] 
-stats_list = [x for x in stats_list if x != '']
-stats_list_names = [x[: x.find(':')].strip() for x in stats_list]
-
-stats_dict = {}
-#populate the dictionary
-for j, v in enumerate(stats_list):
-    stats_dict[stats_list[j][: stats_list[j].find(':')].strip()] = stats_list[j][stats_list[j].find(':') +1 :].strip()
-
-if 'Year Founded' in stats_dict:
-    print(stats_dict.get('Year Founded'))
-
-# make a list of lists of all the stats labels per file
-# then compare them to see what we're dealing with
-stats_contents_eval = []
-def eval_stats_list(soup_object):
-    col1_div = soup_object.find('div', class_='col1-interior')
-    address_h = col1_div.find('h2', text = 'Address')
-    address_p = address_h.find_next_sibling('p')
-    address_list = address_p.get_text().split("\n")
-    address_list = [x.strip() for x in address_list]    
-    stats_h = col1_div.find('h2', text = 'Statistics')
-    stats_p = stats_h.find_next_sibling('p')
-    stats_list = stats_p.get_text().split("\n")
-    stats_list = [x.strip() for x in stats_list]  
-    stats_list = [x for x in stats_list if x != '']
-    stats_list_names = [x[: x.find(':')].strip() for x in stats_list]
-    if address_list[2] == 'UNITED STATES':
-        print(stats_list_names)
-        stats_contents_eval.append(stats_list_names)
-
-for i, v in enumerate(file_list):
-    soup_to_nuts = file_to_soup(f"{data_dir}html-files/{file_list[i]}")
-    eval_stats_list(soup_to_nuts) 
-
-# how many unique orientations of the stats data are there?
-unique_data = [list(x) for x in set(tuple(x) for x in stats_contents_eval)]
-# there are 51 variants.
-
-# so, find all the possible stats items. Make variables for each.
-# Initialize them as empty, but update if you find any. 
-
-# what are all the possible stats items?
-"""
-'Boarding School'
-'Elementary Enrollment'
-'Year Founded'
-'I20'
-'Special Needs'
-'EFL'
-'Total Enrollment'
-'Home School'
-'Grade Levels'
-'Online'
-'Other Accreditation'
-'Early Education Enrollment'
-'High School Enrollment'
-'Middle School Enrollment'
-"""
-
-# better order:
-"""
-'Early Education Enrollment'
-'Elementary Enrollment'
-'Middle School Enrollment'
-'High School Enrollment'
-'Total Enrollment'
-'Grade Levels'
-'Year Founded'
-'Boarding School'
-'I20'
-'Special Needs'
-'EFL'
-'Home School'
-'Online'
-'Other Accreditation'
-"""
-
-# stats variable names
-"""
-early_education_enrollment
-elementary_enrollment
-middle_school_enrollment
-high_school_enrollment
-total_enrollment
-grade_levels
-year_founded
-boarding_school
-i20
-special_needs
-efl
-home_school
-online
-other_accreditation
-"""
-
-########## end PROFILING ##########
-
 # find the statistics section and parse it
 early_education_enrollment = []
 elementary_enrollment = []
@@ -426,47 +255,6 @@ def get_statistics(soup_object):
         other_accreditation.append(v_other_accreditation)
 
 
-for i, v in enumerate(file_list):
-    soup_to_nuts = file_to_soup(f"{data_dir}html-files/{file_list[i]}")
-    get_statistics(soup_to_nuts) 
-
-
-
-"""
-'Early Education Enrollment'
-'Elementary Enrollment'
-'Middle School Enrollment'
-'High School Enrollment'
-'Total Enrollment'
-'Grade Levels'
-'Year Founded'
-'Boarding School'
-'I20'
-'Special Needs'
-'EFL'
-'Home School'
-'Online'
-'Other Accreditation'
-"""
-
-"""
-early_education_enrollment
-elementary_enrollment
-middle_school_enrollment
-high_school_enrollment
-total_enrollment
-grade_levels
-year_founded
-boarding_school
-i20
-special_needs
-efl
-home_school
-online
-other_accreditation
-"""
-
-
 # find the ACSI accredited section, if exists, and parse it
 acsi_accreditation_status = []
 grades_accredited = []
@@ -510,11 +298,6 @@ def get_accreditation(soup_object):
             grades_accredited.append(v_grades_accredited)
 
 
-for i, v in enumerate(file_list):
-    soup_to_nuts = file_to_soup(f"{data_dir}html-files/{file_list[i]}")
-    get_accreditation(soup_to_nuts) 
-
-
 # find the primary contact person section in second div, parse it
 primary_contact_name = []
 def get_primary_contact(soup_object):
@@ -534,12 +317,13 @@ def get_primary_contact(soup_object):
             contact_person = ''
         print(contact_person)
         primary_contact_name.append(contact_person)
-    
-
 
 for i, v in enumerate(file_list):
     soup_to_nuts = file_to_soup(f"{data_dir}html-files/{file_list[i]}")
-    get_primary_contact(soup_to_nuts) 
+    get_contact_info(soup_to_nuts) 
+    get_statistics(soup_to_nuts)
+    get_accreditation(soup_to_nuts) 
+    get_primary_contact(soup_to_nuts)
 
 
 # write all lists to pandas frame to prepare for extract
@@ -564,12 +348,12 @@ master_frame["Total Students"] = total_enrollment
 master_frame["I20 Compliant"] = i20
 master_frame["Grade Levels Taught"] = grade_levels
 master_frame["Year Founded"] = year_founded
-master_frame["ACSI Accreditation Status"]= acsi_accreditation_status
+master_frame["ACSI Accreditation Status"] = acsi_accreditation_status
 master_frame["Grades Accredited"] = grades_accredited
 master_frame["Other Accreditations"] = other_accreditation
 master_frame["Special Needs"] = special_needs
 master_frame["Boarding School"] = boarding_school
-master_frame["EFL"]= efl
+master_frame["EFL"] = efl
 master_frame["Home School"] = home_school
 master_frame["Online"] = online
 
@@ -577,9 +361,4 @@ print(master_frame.head(5))
 
 # write frame to file
 master_frame.to_csv("/Users/Steve/Dropbox/programming/Python/web-scraping/data/acsi_new.csv", encoding='utf-8', index=False)   
-
-
-
-
-
 
