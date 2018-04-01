@@ -158,8 +158,18 @@ state_short = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL",
 #get a list of all the html files:
 file_list = listdir("/Users/Steve/Dropbox/programming/Python/web-scraping/data/acsi/html-files")
 
-# load a file
+def remove_non_us_files(soup_object):
+    box = soup_object.find('div', class_='blue-gray-box-content search')
+    school_name = box.find('h1')
 
+
+
+
+for i in range(0, len(file_list)):
+    html = open(f"{data_dir}html-files/{file_list[i]}", "r")
+    soup_to_nuts = BeautifulSoup(html, "lxml")
+    html.close()
+    analyze_page(soup_to_nuts)  
 
 # function to gather basic info about page structure.
 
@@ -173,6 +183,8 @@ file_list = listdir("/Users/Steve/Dropbox/programming/Python/web-scraping/data/a
 # Then store all of the lists for each page.
 # Then return a count of lines in all of the lists. 
 # Are the lists the same length? If so, that's a place to start.
+# They are all 7 long!!! So that's good. Shouldn't need null
+# handling at all. Now, are all the first elements 
 
 analyze_p_list = []
 p_list_lengths = []
@@ -201,36 +213,92 @@ for i in range(0, len(file_list)):
     html.close()
     analyze_page(soup_to_nuts)   
 
+for i in range(0, 100):
+    print(analyze_p_list_us[i][2])
 
- 
+# analyze_p_list = [x for x in analyze_p_list if x[2] == 'UNITED STATES']
+school_name = []
+school_page_url = []
+street_address = []
+city = []
+state_list = []
+zip_code = []
+primary_contact_email_address = []
+phone_number = []
+fax_number = []
+website_url = []
 
-
-def first_div_parser(soup_object):
+def get_contact_info(soup_object):
     div1 = soup_object.find('div', class_='col1-interior')
     div1_h1 = div1.find('h2')
-    div1_h2 = div1_h1.find_next_sibling('h2')
-    div1_h3 = div1_h2.find_next_sibling('h2')
+    box = soup_object.find('div', class_='blue-gray-box-content search')
+    school_header = box.find('h1')
+    # div1_h2 = div1_h1.find_next_sibling('h2')
+    # div1_h3 = div1_h2.find_next_sibling('h2')
     if div1_h1 != None:
         if div1_h1.text == "Address":
             address_p = div1_h1.find_next_sibling('p')
             p_list = address_p.get_text().split("\n")
             p_list = [x.strip() for x in p_list]    
-            str_addr = p_list[0]
-            print (str_addr)
-            v_city = p_list[1][:p_list[1].find(",")]
-            print (v_city)
-            state = p_list[1][p_list[1].find(",") + 1 : p_list[1].find(",") + 4 ].strip()
-            print (state)
-            zip = p_list[1][p_list[1].find(",") + 4 :].strip()
-            print (zip)
-            phone = p_list[3][p_list[3].find(':') +2:]
-            print (phone)
-            fax = p_list[4][p_list[4].find(':') +2:]
-            print (fax)
-            h_email = p_list[5]
-            print (h_email)
-            school_homepage = p_list[6]
-            print (school_homepage)
+            if p_list[2] == 'UNITED STATES':
+                v_school_name = school_header.text
+                print(v_school_name)
+                school_name.append(v_school_name)
+                str_addr = p_list[0]
+                print (str_addr)
+                street_address.append(p_list[0])
+                v_city = p_list[1][:p_list[1].find(",")]
+                print (v_city)
+                city.append(v_city)
+                state = p_list[1][p_list[1].find(",") + 1 : p_list[1].find(",") + 4 ].strip()
+                print (state)
+                state_list.append(state)
+                zip = p_list[1][p_list[1].find(",") + 4 :].strip()
+                print (zip)
+                zip_code.append(zip)
+                phone = p_list[3][p_list[3].find(':') +2:]
+                print (phone)
+                phone_number.append(phone)
+                fax = p_list[4][p_list[4].find(':') +2:]
+                print (fax)
+                fax_number.append(fax)
+                h_email = p_list[5]
+                print (h_email)
+                primary_contact_email_address.append(h_email)
+                school_homepage = p_list[6]
+                print (school_homepage)
+                website_url.append(school_homepage)
+
+
+
+for i in range(0, len(file_list)):
+    html = open(f"{data_dir}html-files/{file_list[i]}", "r")
+    soup_to_nuts = BeautifulSoup(html, "lxml")
+    html.close()
+    get_contact_info(soup_to_nuts)      
+
+
+
+master_frame = pandas.DataFrame()
+
+master_frame["School Name"] = school_name
+master_frame["Street Address"] = street_address
+master_frame["City"] = city
+master_frame["State"] = state_list
+master_frame["Zip Code"] = zip_code
+master_frame["Primary Contact Email"] = primary_contact_email_address
+master_frame["Phone Number"] = phone_number
+master_frame["Fax Number"] = fax_number
+master_frame["School Website"] = website_url
+
+
+# write frame to file
+# master_frame.to_csv("/Users/Steve/Dropbox/programming/Python/web-scraping/data/acsi.csv", encoding='utf-8', index=False)   
+   
+
+
+
+
 
 
 for i in range(0, len(file_list)):
