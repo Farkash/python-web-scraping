@@ -17,6 +17,7 @@ import timeit
 from time import sleep
 import random
 from os import listdir
+from collections import Counter
 
 base_url = 'https://www.acsi.org'
 post_url = 'https://www.acsi.org/member-search/searchresults/SubmitResult?startRow=0&rowsPerPage=3000'
@@ -235,39 +236,38 @@ def get_contact_info(soup_object):
     school_header = box.find('h1')
     # div1_h2 = div1_h1.find_next_sibling('h2')
     # div1_h3 = div1_h2.find_next_sibling('h2')
-    if div1_h1 != None:
-        if div1_h1.text == "Address":
-            address_p = div1_h1.find_next_sibling('p')
-            p_list = address_p.get_text().split("\n")
-            p_list = [x.strip() for x in p_list]    
-            if p_list[2] == 'UNITED STATES':
-                v_school_name = school_header.text
-                print(v_school_name)
-                school_name.append(v_school_name)
-                str_addr = p_list[0]
-                print (str_addr)
-                street_address.append(p_list[0])
-                v_city = p_list[1][:p_list[1].find(",")]
-                print (v_city)
-                city.append(v_city)
-                state = p_list[1][p_list[1].find(",") + 1 : p_list[1].find(",") + 4 ].strip()
-                print (state)
-                state_list.append(state)
-                zip = p_list[1][p_list[1].find(",") + 4 :].strip()
-                print (zip)
-                zip_code.append(zip)
-                phone = p_list[3][p_list[3].find(':') +2:]
-                print (phone)
-                phone_number.append(phone)
-                fax = p_list[4][p_list[4].find(':') +2:]
-                print (fax)
-                fax_number.append(fax)
-                h_email = p_list[5]
-                print (h_email)
-                primary_contact_email_address.append(h_email)
-                school_homepage = p_list[6]
-                print (school_homepage)
-                website_url.append(school_homepage)
+    if div1_h1.text == "Address":
+        address_p = div1_h1.find_next_sibling('p')
+        p_list = address_p.get_text().split("\n")
+        p_list = [x.strip() for x in p_list]    
+        if p_list[2] == 'UNITED STATES':
+            v_school_name = school_header.text
+            print(v_school_name)
+            school_name.append(v_school_name)
+            str_addr = p_list[0]
+            print (str_addr)
+            street_address.append(p_list[0])
+            v_city = p_list[1][:p_list[1].find(",")]
+            print (v_city)
+            city.append(v_city)
+            state = p_list[1][p_list[1].find(",") + 1 : p_list[1].find(",") + 4 ].strip()
+            print (state)
+            state_list.append(state)
+            zip = p_list[1][p_list[1].find(",") + 4 :].strip()
+            print (zip)
+            zip_code.append(zip)
+            phone = p_list[3][p_list[3].find(':') +2:]
+            print (phone)
+            phone_number.append(phone)
+            fax = p_list[4][p_list[4].find(':') +2:]
+            print (fax)
+            fax_number.append(fax)
+            h_email = p_list[5]
+            print (h_email)
+            primary_contact_email_address.append(h_email)
+            school_homepage = p_list[6]
+            print (school_homepage)
+            website_url.append(school_homepage)
 
 
 
@@ -307,39 +307,110 @@ for i in range(0, len(file_list)):
     html.close()
     analyze_page(soup_to_nuts)
 
-# test this function on one file to see how it works. Pass it a soup object.
-def blah(soup_object):
+
+# how often is the second heading "Statistics?"
+# how often is it "ACSI Accredited?"
+# how often is it null?
+h2_list = []
+def analyze_second_h2(soup_object):
     div1 = soup_object.find('div', class_='col1-interior')
-    print(div1.content)
-    first_heading = div1.find('h2')
-    print(f"First heading: {first_heading}")
-    if first_heading.text == 'Address':
-        address_p = first_heading.find_next_sibling('p')
-        #get all data from this <p>. Should be ok to just use content list indexes.
-        p_list = address_p.contents
-        str_addr = p_list[0].strip().encode('utf-8')
-        print str_addr
-        street_address.append(str_addr)
-        v_city = p_list[2][:p_list[2].find(",")].strip().encode('utf-8')
-        print v_city
-        city.append(v_city)
-        zip = p_list[2][p_list[2].find(",") + 5 :].strip().encode('utf-8')
-        print zip
-        zip_code.append(zip)
-        phone = p_list[6][p_list[6].find(':') +2:].strip().encode('utf-8')
-        print phone
-        phone_number.append(phone)
-        fax = p_list[8][p_list[8].find(':') +2:].strip().encode('utf-8')
-        print fax
-        fax_number.append(fax)
-        h_email = p_list[11].text.encode('utf-8')
-        print h_email
-        primary_contact_email_address.append(h_email)
-        school_homepage = p_list[14].text.encode('utf-8')
-        print school_homepage
-        website_url.append(school_homepage)    
+    div1_h1 = div1.find('h2')
+    div1_h2 = div1_h1.find_next_sibling('h2')
+    div1_h3 = div1_h2.find_next_sibling('h2')
+    if div1_h2 != None:
+        print(div1_h2.text)
+        h2_list.append(div1_h2.text)
 
 
+for i in range(0, len(file_list)):
+    html = open(f"{data_dir}html-files/{file_list[i]}", "r")
+    soup_to_nuts = BeautifulSoup(html, "lxml")
+    html.close()
+    analyze_second_h2(soup_to_nuts)   
+
+Counter(h2_list)
+# Counter({'ACSI Accredited': 871, 'Statistics': 1581})
+
+h3_list = []
+def analyze_second_h3(soup_object):
+    div1 = soup_object.find('div', class_='col1-interior')
+    div1_h1 = div1.find('h2')
+    div1_h2 = div1_h1.find_next_sibling('h2')
+    div1_h3 = div1_h2.find_next_sibling('h2')
+    if div1_h3 != None:
+        print(div1_h3.text)
+        h3_list.append(div1_h3.text)
+    else:
+        print('None')
+        h3_list.append('None')
+
+
+for i in range(0, len(file_list)):
+    html = open(f"{data_dir}html-files/{file_list[i]}", "r")
+    soup_to_nuts = BeautifulSoup(html, "lxml")
+    html.close()
+    analyze_second_h3(soup_to_nuts)   
+
+Counter(h3_list)
+
+# how to find a heading with specific text?
+stats_heading_list = []
+def find_statistics_h2(soup_object):
+    div1 = div1 = soup_object.find('div', class_='col1-interior')
+    h2_stats = div1.find('h2', text = 'Statistics')
+    print(h2_stats.text)
+    stats_heading_list.append(h2_stats.text)
+
+for i in range(0, len(file_list)):
+    html = open(f"{data_dir}html-files/{file_list[i]}", "r")
+    soup_to_nuts = BeautifulSoup(html, "lxml")
+    html.close()
+    find_statistics_h2(soup_to_nuts) 
+
+
+
+# find the 2nd and 3rd headings. Look for stats. If it's not the 2nd, check the
+# 3rd, else null them out. Same for ACSI Accredidation later
+
+def get_statistics(soup_object):
+    div1 = soup_object.find('div', class_='col1-interior')
+    div1_h1 = div1.find('h2')
+    box = soup_object.find('div', class_='blue-gray-box-content search')
+    school_header = box.find('h1')
+    div1_h2 = div1_h1.find_next_sibling('h2')
+    div1_h3 = div1_h2.find_next_sibling('h2')
+    if div1_h2.text == "Statistics":
+        address_p = div1_h2.find_next_sibling('p')
+        p_list = address_p.get_text().split("\n")
+        p_list = [x.strip() for x in p_list]    
+        if p_list[2] == 'UNITED STATES':
+            v_school_name = school_header.text
+            print(v_school_name)
+            school_name.append(v_school_name)
+            str_addr = p_list[0]
+            print (str_addr)
+            street_address.append(p_list[0])
+            v_city = p_list[1][:p_list[1].find(",")]
+            print (v_city)
+            city.append(v_city)
+            state = p_list[1][p_list[1].find(",") + 1 : p_list[1].find(",") + 4 ].strip()
+            print (state)
+            state_list.append(state)
+            zip = p_list[1][p_list[1].find(",") + 4 :].strip()
+            print (zip)
+            zip_code.append(zip)
+            phone = p_list[3][p_list[3].find(':') +2:]
+            print (phone)
+            phone_number.append(phone)
+            fax = p_list[4][p_list[4].find(':') +2:]
+            print (fax)
+            fax_number.append(fax)
+            h_email = p_list[5]
+            print (h_email)
+            primary_contact_email_address.append(h_email)
+            school_homepage = p_list[6]
+            print (school_homepage)
+            website_url.append(school_homepage)
 
 
 
