@@ -35,18 +35,10 @@ primary_contact_email_address = []
 phone_number = []
 fax_number = []
 website_url = []
-early_education_students = []
-elementary_students = []
-middle_school_students = []
-high_school_students = []
-total_students = []
-i20_compliant = []
-grade_levels_taught = []
-year_founded = []
+
 acsi_accreditation_status = []
 grades_accredited = []
-other_accreditations = []
-special_needs = []
+
  
 # since I'll be submitting a form to get results back, I will be using
 # the POST HTTP method. Then the GET method to paginate through search result
@@ -302,47 +294,378 @@ for i in range(0, len(file_list)):
     find_statistics_h2(soup_to_nuts) 
 
 
+#clean up stats list
+soup_object = file_to_soup(f"{data_dir}html-files/{file_list[i]}")
+col1_div = soup_object.find('div', class_='col1-interior')
+stats_h = col1_div.find('h2', text = 'Statistics')
+stats_p = stats_h.find_next_sibling('p')
+stats_list = stats_p.get_text().split("\n")
+stats_list = [x.strip() for x in stats_list] 
+stats_list = [x for x in stats_list if x != '']
+stats_list_names = [x[: x.find(':')].strip() for x in stats_list]
 
+stats_dict = {}
+#populate the dictionary
+for j, v in enumerate(stats_list):
+    stats_dict[stats_list[j][: stats_list[j].find(':')].strip()] = stats_list[j][stats_list[j].find(':') +1 :].strip()
+
+if 'Year Founded' in stats_dict:
+    print(stats_dict.get('Year Founded'))
+
+# make a list of lists of all the stats labels per file
+# then compare them to see what we're dealing with
+stats_contents_eval = []
+def eval_stats_list(soup_object):
+    col1_div = soup_object.find('div', class_='col1-interior')
+    address_h = col1_div.find('h2', text = 'Address')
+    address_p = address_h.find_next_sibling('p')
+    address_list = address_p.get_text().split("\n")
+    address_list = [x.strip() for x in address_list]    
+    stats_h = col1_div.find('h2', text = 'Statistics')
+    stats_p = stats_h.find_next_sibling('p')
+    stats_list = stats_p.get_text().split("\n")
+    stats_list = [x.strip() for x in stats_list]  
+    stats_list = [x for x in stats_list if x != '']
+    stats_list_names = [x[: x.find(':')].strip() for x in stats_list]
+    if address_list[2] == 'UNITED STATES':
+        print(stats_list_names)
+        stats_contents_eval.append(stats_list_names)
+
+for i, v in enumerate(file_list):
+    soup_to_nuts = file_to_soup(f"{data_dir}html-files/{file_list[i]}")
+    eval_stats_list(soup_to_nuts) 
+
+# how many unique orientations of the stats data are there?
+unique_data = [list(x) for x in set(tuple(x) for x in stats_contents_eval)]
+# there are 51 variants.
+
+# so, find all the possible stats items. Make variables for each.
+# Initialize them as empty, but update if you find any. 
+
+# what are all the possible stats items?
+"""
+'Boarding School'
+'Elementary Enrollment'
+'Year Founded'
+'I20'
+'Special Needs'
+'EFL'
+'Total Enrollment'
+'Home School'
+'Grade Levels'
+'Online'
+'Other Accreditation'
+'Early Education Enrollment'
+'High School Enrollment'
+'Middle School Enrollment'
+"""
+
+# better order:
+"""
+'Early Education Enrollment'
+'Elementary Enrollment'
+'Middle School Enrollment'
+'High School Enrollment'
+'Total Enrollment'
+'Grade Levels'
+'Year Founded'
+'Boarding School'
+'I20'
+'Special Needs'
+'EFL'
+'Home School'
+'Online'
+'Other Accreditation'
+"""
+
+# stats variable names
+"""
+early_education_enrollment
+elementary_enrollment
+middle_school_enrollment
+high_school_enrollment
+total_enrollment
+grade_levels
+year_founded
+boarding_school
+i20
+special_needs
+efl
+home_school
+online
+other_accreditation
+"""
+
+########## end PROFILING ##########
 # find the statistics section and parse it
+early_education_enrollment = []
+elementary_enrollment = []
+middle_school_enrollment = []
+high_school_enrollment = []
+total_enrollment = []
+grade_levels = []
+year_founded = []
+boarding_school = []
+i20 = []
+special_needs = []
+efl = []
+home_school = []
+online = []
+other_accreditation = []
+
 def get_statistics(soup_object):
-    div1 = soup_object.find('div', class_='col1-interior')
-    div1_h1 = div1.find('h2')
     box = soup_object.find('div', class_='blue-gray-box-content search')
     school_header = box.find('h1')
-    div1_h2 = div1_h1.find_next_sibling('h2')
-    div1_h3 = div1_h2.find_next_sibling('h2')
-    if div1_h2.text == "Statistics":
-        address_p = div1_h2.find_next_sibling('p')
-        p_list = address_p.get_text().split("\n")
-        p_list = [x.strip() for x in p_list]    
-        if p_list[2] == 'UNITED STATES':
-            v_school_name = school_header.text
-            print(v_school_name)
-            school_name.append(v_school_name)
-            str_addr = p_list[0]
-            print (str_addr)
-            street_address.append(p_list[0])
-            v_city = p_list[1][:p_list[1].find(",")]
-            print (v_city)
-            city.append(v_city)
-            state = p_list[1][p_list[1].find(",") + 1 : p_list[1].find(",") + 4 ].strip()
-            print (state)
-            state_list.append(state)
-            zip = p_list[1][p_list[1].find(",") + 4 :].strip()
-            print (zip)
-            zip_code.append(zip)
-            phone = p_list[3][p_list[3].find(':') +2:]
-            print (phone)
-            phone_number.append(phone)
-            fax = p_list[4][p_list[4].find(':') +2:]
-            print (fax)
-            fax_number.append(fax)
-            h_email = p_list[5]
-            print (h_email)
-            primary_contact_email_address.append(h_email)
-            school_homepage = p_list[6]
-            print (school_homepage)
-            website_url.append(school_homepage)
+    col1_div = soup_object.find('div', class_='col1-interior')
+    address_h = col1_div.find('h2', text = 'Address')
+    address_p = address_h.find_next_sibling('p')
+    address_list = address_p.get_text().split("\n")
+    address_list = [x.strip() for x in address_list]    
+    stats_h = col1_div.find('h2', text = 'Statistics')
+    stats_p = stats_h.find_next_sibling('p')
+    stats_list = stats_p.get_text().split("\n")
+    stats_list = [x.strip() for x in stats_list]    
+    if address_list[2] == 'UNITED STATES':
+        # set up and populate dictionary
+        stats_dict = {}
+        for j, v in enumerate(stats_list):
+            stats_dict[stats_list[j][: stats_list[j].find(':')].strip()] = stats_list[j][stats_list[j].find(':') +1 :].strip()
+        # Early Education Enrollment
+        if 'Early Education Enrollment' in stats_dict:
+            v_early_education_enrollment = stats_dict.get('Early Education Enrollment')
+        else:
+            v_early_education_enrollment = ''
+        print(v_early_education_enrollment)
+        early_education_enrollment.append(v_early_education_enrollment)
+        # Elementary Enrollment
+        if 'Elementary Enrollment' in stats_dict:
+            v_early_education_enrollment = stats_dict.get('Elementary Enrollment')
+        else:
+            v_early_education_enrollment = ''
+        print(v_early_education_enrollment)
+        early_education_enrollment.append(v_early_education_enrollment)
+        # Middle School Enrollment
+
+        # High School Enrollment
+        # Total Enrollment
+        # Grade Levels
+        # Year Founded
+        # Boarding School
+        # I20
+        # Special Needs
+        # EFL
+        # Home School
+        # Online
+        # Other Accreditation
+
+
+
+
+
+
+"""
+'Early Education Enrollment'
+'Elementary Enrollment'
+'Middle School Enrollment'
+'High School Enrollment'
+'Total Enrollment'
+'Grade Levels'
+'Year Founded'
+'Boarding School'
+'I20'
+'Special Needs'
+'EFL'
+'Home School'
+'Online'
+'Other Accreditation'
+"""
+
+"""
+early_education_enrollment
+elementary_enrollment
+middle_school_enrollment
+high_school_enrollment
+total_enrollment
+grade_levels
+year_founded
+boarding_school
+i20
+special_needs
+efl
+home_school
+online
+other_accreditation
+"""
+
+
+[x[: x.find(':')].strip() for x in stats_list]
+        mydict[key] = "value"
+
+
+# split the stats_list into a dictionary so I can index the parts
+# for getting the data, lookup the item that has the desired lead text
+# and grab it. If it's None, append an empty string to list
+
+
+
+
+        # Early Education Enrollment
+        early_ed_found = 'N'
+        for i in xrange(0, len(stats_list)):
+            if 'Early Education Enrollment' in stats_list[i]:
+                early_ed = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                early_education_students.append(early_ed)
+                print early_ed
+                early_ed_found = 'Y'
+                break
+        if early_ed_found == 'N':
+            early_ed = ''
+            early_education_students.append(early_ed)
+            print 'Text not found, making this value blank'
+        # Elementary Enrollment
+        elem_found = 'N'
+        for i in xrange(0, len(stats_list)):
+            if 'Elementary Enrollment' in stats_list[i]:
+                elem = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                elementary_students.append(elem)
+                print elem
+                elem_found = 'Y'
+                break
+        if elem_found == 'N':
+            elem = ''
+            elementary_students.append(elem)
+            print 'Text not found, making this value blank'
+        # Middle School Enrollment
+        middle_found = 'N'
+        for i in xrange(0, len(stats_list)):
+            if 'Middle School Enrollment' in stats_list[i]:
+                middle = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                middle_school_students.append(middle)
+                print middle
+                middle_found = 'Y'
+                break
+        if middle_found == 'N':
+            middle = ''
+            middle_school_students.append(middle)
+            print 'Text not found, making this value blank'
+        # High School Enrollment
+        high_found = 'N'
+        for i in xrange(0, len(stats_list)):
+            if 'High School Enrollment' in stats_list[i]:
+                high = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                high_school_students.append(high)
+                print high
+                high_found = 'Y'
+                break
+        if high_found == 'N':
+            high = ''
+            high_school_students.append(high)
+            print 'Text not found, making this value blank'
+        # Total Enrollment
+        total_s_found = 'N'
+        for i in xrange(0, len(stats_list)):
+            if 'Total Enrollment' in stats_list[i]:
+                total_s = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                total_students.append(total_s)
+                print total_s
+                total_s_found = 'Y'
+                break
+        if total_s_found == 'N':
+            total_s = ''
+            total_students.append(total_s)
+            print 'Text not found, making this value blank'
+        # I20
+        I20_found = 'N'
+        for i in xrange(0, len(stats_list)):
+            if 'I20' in stats_list[i]:
+                I20 = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                i20_compliant.append(I20)
+                print I20
+                I20_found = 'Y'
+                break
+        if I20_found == 'N':
+            I20 = ''
+            i20_compliant.append(I20)
+            print 'Text not found, making this value blank'
+        # Grade Levels
+        grade_l_found = 'N'
+        for i in xrange(0, len(stats_list)):
+            if 'Grade Levels' in stats_list[i]:
+                grade_l = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                grade_levels_taught.append(grade_l)
+                print grade_l
+                grade_l_found = 'Y'
+                break
+        if grade_l_found == 'N':
+            grade_l= ''
+            grade_levels_taught.append(grade_l)
+            print 'Text not found, making this value blank'
+        # Year Founded
+        year_found = 'N'
+        for i in xrange(0, len(stats_list)):
+            if 'Year Founded' in stats_list[i]:
+                year = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                year_founded.append(year)
+                print year
+                year_found = 'Y'
+                break
+        if year_found == 'N':
+            year = ''
+            year_founded.append(year)
+            print 'Text not found, making this value blank'
+        # Other Accreditation
+        other_a_found = 'N'
+        for i in xrange(0, len(stats_list)):
+            if 'Other Accreditation' in stats_list[i]:
+                other_a = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                other_accreditations.append(other_a)
+                print other_a
+                other_a_found = 'Y'
+                break
+        if other_a_found == 'N':
+            other_a = ''
+            other_accreditations.append(other_a)
+            print 'Text not found, making this value blank'
+        # Special Needs
+        needs_found = 'N'
+        for i in xrange(0, len(stats_list)):
+            if 'Special Needs' in stats_list[i]:
+                needs = stats_list[i][stats_list[i].find(':') + 2 :].strip().encode('utf-8')
+                special_needs.append(needs)
+                print needs
+                needs_found = 'Y'
+                break
+        if needs_found == 'N':
+            needs = ''
+            special_needs.append(needs)
+            print 'Text not found, making this value blank' 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
