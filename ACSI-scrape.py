@@ -159,65 +159,15 @@ state_short = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL",
 #get a list of all the html files:
 file_list = listdir("/Users/Steve/Dropbox/programming/Python/web-scraping/data/acsi/html-files")
 
-def remove_non_us_files(soup_object):
-    box = soup_object.find('div', class_='blue-gray-box-content search')
-    school_name = box.find('h1')
-
-
-
-
-for i in range(0, len(file_list)):
-    html = open(f"{data_dir}html-files/{file_list[i]}", "r")
+# function to open html file, create soup object from it, and close it
+def file_to_soup(file_path):
+    html = open(file_path, "r")
     soup_to_nuts = BeautifulSoup(html, "lxml")
     html.close()
-    analyze_page(soup_to_nuts)  
-
-# function to gather basic info about page structure.
-
-# I need to do some heavy profiling since the contents of the
-# address paragraph can vary so much. 
-# Limit to U.S.
-# Assume first item is street
-# Secord part of second item is city, etc.
-
-# Make a function that splits div <p> content down to a list.
-# Then store all of the lists for each page.
-# Then return a count of lines in all of the lists. 
-# Are the lists the same length? If so, that's a place to start.
-# They are all 7 long!!! So that's good. Shouldn't need null
-# handling at all. Now, are all the first elements 
-
-analyze_p_list = []
-p_list_lengths = []
-
-def analyze_page(soup_object):
-    div1 = soup_object.find('div', class_='col1-interior')
-    div1_h1 = div1.find('h2')
-    div1_h2 = div1_h1.find_next_sibling('h2')
-    div1_h3 = div1_h2.find_next_sibling('h2')
-    if div1_h1 != None:
-        if div1_h1.text == "Address":
-            address_p = div1_h1.find_next_sibling('p')
-            p_list = address_p.get_text().split("\n")
-            p_list = [x.strip() for x in p_list]
-            print(len(p_list))
-            # print(p_list)
-            sleep(.1)
-            p_list_lengths.append(len(p_list))
-            analyze_p_list.append(p_list)
-
-
-
-for i in range(0, len(file_list)):
-    html = open(f"{data_dir}html-files/{file_list[i]}", "r")
-    soup_to_nuts = BeautifulSoup(html, "lxml")
-    html.close()
-    analyze_page(soup_to_nuts)   
-
-for i in range(0, 100):
-    print(analyze_p_list_us[i][2])
+    return soup_to_nuts
 
 # analyze_p_list = [x for x in analyze_p_list if x[2] == 'UNITED STATES']
+
 school_name = []
 school_page_url = []
 street_address = []
@@ -230,52 +180,46 @@ fax_number = []
 website_url = []
 
 def get_contact_info(soup_object):
-    div1 = soup_object.find('div', class_='col1-interior')
-    div1_h1 = div1.find('h2')
     box = soup_object.find('div', class_='blue-gray-box-content search')
     school_header = box.find('h1')
-    # div1_h2 = div1_h1.find_next_sibling('h2')
-    # div1_h3 = div1_h2.find_next_sibling('h2')
-    if div1_h1.text == "Address":
-        address_p = div1_h1.find_next_sibling('p')
-        p_list = address_p.get_text().split("\n")
-        p_list = [x.strip() for x in p_list]    
-        if p_list[2] == 'UNITED STATES':
-            v_school_name = school_header.text
-            print(v_school_name)
-            school_name.append(v_school_name)
-            str_addr = p_list[0]
-            print (str_addr)
-            street_address.append(p_list[0])
-            v_city = p_list[1][:p_list[1].find(",")]
-            print (v_city)
-            city.append(v_city)
-            state = p_list[1][p_list[1].find(",") + 1 : p_list[1].find(",") + 4 ].strip()
-            print (state)
-            state_list.append(state)
-            zip = p_list[1][p_list[1].find(",") + 4 :].strip()
-            print (zip)
-            zip_code.append(zip)
-            phone = p_list[3][p_list[3].find(':') +2:]
-            print (phone)
-            phone_number.append(phone)
-            fax = p_list[4][p_list[4].find(':') +2:]
-            print (fax)
-            fax_number.append(fax)
-            h_email = p_list[5]
-            print (h_email)
-            primary_contact_email_address.append(h_email)
-            school_homepage = p_list[6]
-            print (school_homepage)
-            website_url.append(school_homepage)
-
+    col1_div = soup_object.find('div', class_='col1-interior')
+    address_h = col1_div.find('h2', text = 'Address')
+    address_p = address_h.find_next_sibling('p')
+    p_list = address_p.get_text().split("\n")
+    p_list = [x.strip() for x in p_list]    
+    if p_list[2] == 'UNITED STATES':
+        v_school_name = school_header.text
+        print(v_school_name)
+        school_name.append(v_school_name)
+        str_addr = p_list[0]
+        print (str_addr)
+        street_address.append(p_list[0])
+        v_city = p_list[1][:p_list[1].find(",")]
+        print (v_city)
+        city.append(v_city)
+        state = p_list[1][p_list[1].find(",") + 1 : p_list[1].find(",") + 4 ].strip()
+        print (state)
+        state_list.append(state)
+        zip = p_list[1][p_list[1].find(",") + 4 :].strip()
+        print (zip)
+        zip_code.append(zip)
+        phone = p_list[3][p_list[3].find(':') +2:]
+        print (phone)
+        phone_number.append(phone)
+        fax = p_list[4][p_list[4].find(':') +2:]
+        print (fax)
+        fax_number.append(fax)
+        h_email = p_list[5]
+        print (h_email)
+        primary_contact_email_address.append(h_email)
+        school_homepage = p_list[6]
+        print (school_homepage)
+        website_url.append(school_homepage)
 
 
 for i in range(0, len(file_list)):
-    html = open(f"{data_dir}html-files/{file_list[i]}", "r")
-    soup_to_nuts = BeautifulSoup(html, "lxml")
-    html.close()
-    get_contact_info(soup_to_nuts)      
+    soup_to_nuts = file_to_soup(f"{data_dir}html-files/{file_list[i]}")
+    get_contact_info(soup_to_nuts)        
 
 
 
@@ -296,17 +240,7 @@ master_frame["School Website"] = website_url
 # master_frame.to_csv("/Users/Steve/Dropbox/programming/Python/web-scraping/data/acsi.csv", encoding='utf-8', index=False)   
    
 
-
-
-
-
-
-for i in range(0, len(file_list)):
-    html = open(f"{data_dir}html-files/{file_list[i]}", "r")
-    soup_to_nuts = BeautifulSoup(html, "lxml")
-    html.close()
-    analyze_page(soup_to_nuts)
-
+######### PROFILING ##########
 
 # how often is the second heading "Statistics?"
 # how often is it "ACSI Accredited?"
@@ -369,9 +303,7 @@ for i in range(0, len(file_list)):
 
 
 
-# find the 2nd and 3rd headings. Look for stats. If it's not the 2nd, check the
-# 3rd, else null them out. Same for ACSI Accredidation later
-
+# find the statistics section and parse it
 def get_statistics(soup_object):
     div1 = soup_object.find('div', class_='col1-interior')
     div1_h1 = div1.find('h2')
